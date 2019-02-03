@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 
-import { Button, Container, Row, Col, InputGroup, InputGroupAddon, Input } from 'reactstrap';
+import { Button, Container, Row, Col, InputGroup, Input } from 'reactstrap';
 
 class Lobby extends Component {
   state = {
