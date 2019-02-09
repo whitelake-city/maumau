@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Karte} from "./karte";
-import {ART, WERT} from "../konstanten";
+import {ART, WERT} from "../../konstanten";
 
 export class SpielerKarten extends Component {
 
@@ -40,21 +40,20 @@ export class SpielerKarten extends Component {
     }
 
     karteGewaehlt(position) {
-        console.log(position)
+        console.log(position);
         // TODO send picked card to server
         this.setState(this.state.karten.splice(position, 1))
     }
 
     render() {
         return (
-            <div className={"spielerkarten"}>
-                <h1 className={"spielername"}>{this.props.spielername}</h1>
+            <div className={"spieler"}>
+                <h1 className={"name"}>{this.props.spielername}</h1>
                 <div className={"karten"}>
                     {
-                        this.state.karten.map((aktuelleKarte, idx) => {
-                            console.log(idx);
-                            return (<Karte key={idx} position={idx} karte={aktuelleKarte} beiClick={this.karteGewaehlt}/>);
-                        })
+                        this.state.karten.map(
+                            (aktuelleKarte, idx) => (<Karte key={idx} position={idx} karte={aktuelleKarte} beiClick={this.karteGewaehlt}/>)
+                        )
                     }
                 </div>
             </div>

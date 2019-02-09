@@ -13,31 +13,75 @@ code {
     monospace;
 }
 
+.maumau {
+    display: flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+/*GEGNER*/
+.alleGegner {
+    height: 33%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.alleGegner .gegner {
+    max-width: 30%;
+    margin: 0 25px;
+}
+
+.alleGegner .gegner .karten {
+    display: flex;
+    justify-content: center;
+}
+
+.alleGegner .gegner .name {
+    display: flex;
+    justify-content: center;
+}
+
+.alleGegner .gegner .karten .karte {
+    width: 75px;
+    margin: 0.25rem;
+}
+
+
+/*KARTENSTAPEL*/
+.kartenstapel {
+    height: 33%;
+    display: flex;
+    justify-content: center;
+}
+
 /*SPIELERKARTEN*/
-.spielerkarten {
-    display: block;
+.spieler {
+    display: flex;
+    flex-direction:column;
+    justify-content:space-between;
     width: 100%;
-    justify-content: center;
+    height: 33%;
 }
 
-.spielerkarten .spielername {
+.spieler .name {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.spieler .karten {
     display: inline-flex;
     justify-content: center;
     width: 100%;
 }
 
-.spielerkarten .karten {
-    display: inline-flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.spielerkarten .karten .karte {
+.spieler .karten .karte {
     width: 100px;
     margin: 0.25rem;
 }
-.spielerkarten .karten .karte:hover {
+
+.spieler .karten .karte:hover {
     cursor: pointer;
     box-shadow: 0 0 0.25rem 0.25rem #0ff;
-
 }
