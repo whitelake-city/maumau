@@ -6,7 +6,7 @@ class Db {
     }
     connect(callback) {
         let dbName = 'maumau'
-        let tables = ['spieler', 'spiele','spieler_karten','stapel']
+        let tables = ['spieler', 'spiele', 'spieler_karten', 'stapel']
         r.connect({
             host: 'localhost',
             port: 28015,
@@ -30,30 +30,60 @@ class Db {
 
             callback(connection)
         }, (err) => {
-
             console.log('Unable to establish a connection to db', err)
         })
-
-
     }
+
     createPlayer(name, callback) {
+        // r.table('spieler')
+        //     .filter({ 'name': name })
+        //     .run(this.connection)
+        //     .then((cursor) => {
+        //         cursor.next()
+        //             .then((row) => {
+        //                 callback({ 'ok': false, id: row.id, 'name': row.name })
+        //             }, () => {
+        //                 r.table('spieler')
+        //                     .insert({
+        //                         'name': name
+        //                     })
+        //                     .run(this.connection, (err, result) => {
+        //                         callback({ ok: true, id: result.generated_keys[0], 'name': name })
+        //                     })
+        //             })
+        //     })
         r.table('spieler')
-            .filter({ 'name': name })
-            .run(this.connection)
-            .then((cursor) => {
-                cursor.next()
-                    .then((row) => {
-                        callback({ 'ok': false, id: row.id, 'name': row.name })
-                    }, () => {
-                        r.table('spieler')
-                            .insert({
-                                'name': name
-                            })
-                            .run(this.connection, (err, result) => {
-                                callback({ ok: true, id: result.generated_keys[0], 'name': name })
-                            })
+            .insert({
+                'name': name
+            })
+            .run(this.connection, (err, result) => {
+                if (err) { callback({ ok: false }); this.err(err); return }
+                callback({ ok: true, id: result.generated_keys[0], 'name': name })
+            })
+    }
+
+    startGame(deck, playerId, callback) {
+        console.log(deck)
+        console.log(playerId)
+        r.table('spiele')
+            .insert({
+                'gestartet': false,
+                'amZug': playerId
+            })
+            .run(this.connection, (err, result) => {
+                if (err) { callback({ ok: false }); this.err(err); return }
+
+                r.table('stapel')
+                    .insert({ ...deck, 'spiel': result.generated_keys[0] })
+                    .run(this.connection, (err, result) => {
+                        if (err) { callback({ ok: false }); this.err(err); return }
                     })
             })
+
+    }
+
+    err(err) {
+        console.log(err)
     }
 }
 

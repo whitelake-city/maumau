@@ -19,13 +19,19 @@ class Deck {
     }
 
     createDeck() {
-        return this.shuffle(this.values)
-            .map((val) => {
-                return [].concat.apply([],
-                    this.shuffle(this.symbols)
-                    .map((symbol)=> val+ symbol)
-                );
+        let result = []
+        this.values
+            .forEach((val) => {
+                this.symbols.forEach(((symbol) => {
+                    result.push({
+                        wert: val,
+                        art: symbol
+                    })
+                }))
             })
+            
+        return this.shuffle(result);
+
     }
 
     shuffle(array) {

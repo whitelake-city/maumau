@@ -18,16 +18,23 @@ class ApiComponent extends Component {
     }
 
     spielerErstellt = (ergebnis) => {
-        if (ergebnis.ok)
+        if (ergebnis.ok) {
             this.setState((alterState) => ({
                 spieler: [...alterState.spieler, ergebnis]
             }))
+        } else {
+            console.log("Fehler beim Erstellen des Spielers.");
+        }
     }
 
     setzeSpielernamen = (ereignis) => {
         this.setState({
             spielername: ereignis.target.value
         })
+    }
+
+    spielGestartet = (ergebnis) => {
+        console.log(ergebnis)
     }
 
     render() {
@@ -55,16 +62,29 @@ class ApiComponent extends Component {
                     <Col>
                         <ul>
                             {this.state.spieler.map(spieler => (
-                                <li
-                                    key={spieler.id}
-                                >
-                                    {spieler.name}
-                                </li>
+                                <Spieler api={this.props.api} spieler={spieler} key={spieler.id} spielGestartet={this.spielGestartet} />
                             ))}
                         </ul>
                     </Col>
                 </Row>
             </Container>
+        )
+    }
+}
+
+class Spieler extends Component {
+    spielStarten = (ereignis) => {
+        ereignis.preventDefault()
+        this.props.api.spielStarten(this.props.spieler.id, this.props.spielGestartet)
+    }
+    render() {
+        return (
+            <Button
+                key={this.props.spieler.id}
+                onClick={this.spielStarten}
+            >
+                {this.props.spieler.name}
+            </Button>
         )
     }
 }
@@ -79,8 +99,18 @@ class Api {
         this.socket.emit(
             'erstelleSpieler',
             { name },
-            (result) => {
-                rueckfuf(result)
+            (ergebnis) => {
+                rueckfuf(ergebnis)
+            }
+        )
+    }
+
+    spielStarten(spielerId, rueckfuf) {
+        this.socket.emit(
+            'spielStarten',
+            {spielerId},
+            (ergebnis) => {
+                rueckfuf(ergebnis)
             }
         )
     }
