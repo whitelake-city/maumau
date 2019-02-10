@@ -52,7 +52,7 @@ class Db {
         // known gap: players can join multiple games
         r.branch(
             this.existsGameToJoin(),
-            this.addPlayerToOpenGame(playerId),
+            this.addPlayerToExistingGame(playerId),
             this.createNewGame(deck, playerId)
         ).run(this.connection, (err, result) => {
             if (err) { callback({ ok: false }); this.err(err); return }
@@ -74,7 +74,7 @@ class Db {
     }
 
     //add the player to the game, and vice versa
-    addPlayerToOpenGame(playerId) {
+    addPlayerToExistingGame(playerId) {
         return r.db('maumau')
             .table('spiele')
             .filter(r.row('spieler').count().lt(4)
