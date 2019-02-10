@@ -5,13 +5,13 @@ class Db {
         this.connection = null
     }
     connect(callback) {
-        let dbName = 'maumau'
-        let tables = ['spieler', 'spiele', 'spieler_karten', 'stapel']
+        let dbName = 'maumau';
+        let tables = ['spieler', 'spiele', 'spieler_karten', 'stapel'];
         r.connect({
             host: 'localhost',
             port: 28015,
         }).then((connection) => {
-            this.connection = connection
+            this.connection = connection;
             r.dbList().contains(dbName)
                 .do((databaseExists) => {
                     return r.branch(
@@ -20,13 +20,13 @@ class Db {
                         r.dbCreate(dbName)
                     );
                 }).run(connection);
-            connection.use(dbName)
+            connection.use(dbName);
 
 
             r(tables)
                 .difference(r.db(dbName).tableList())
                 .forEach(table => r.db(dbName).tableCreate(table))
-                .run(connection)
+                .run(connection);
 
             r.db(dbName).table('spieler').indexCreate("spielId")
 
@@ -161,6 +161,10 @@ class Db {
 
     err(err) {
         console.log(err)
+    }
+
+    loadPlayer(playerId, callback) {
+        r.table('spieler').get(playerId).run(this.connection, (err, result) => callback(result));
     }
 }
 

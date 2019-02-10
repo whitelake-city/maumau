@@ -1,19 +1,22 @@
-const deck = require('../deck/deck')
+const deck = require('../deck/deck');
 
 class Game {
     constructor(db, client) {
-        this.db = db
-        this.client = client
+        this.db = db;
+        this.client = client;
         this.deck = new deck()
     }
 
     start() {
         this.client.on('erstelleSpieler', ({ name }, callback) => {
             this.createPlayer({ name, callback })
-        })
+        });
         this.client.on('spielStarten', ({ spielerId }, callback) => {
             this.startGame({ playerId: spielerId, callback })
-        })
+        });
+        this.client.on('ladeLobby', ({ spielerId }, callback) => {
+            this.loadLobby({ playerId: spielerId, callback })
+        });
     }
 
     createPlayer({ name, callback }) {
@@ -56,6 +59,36 @@ class Game {
     err(err, details) {
         console.log(err, details)
     }
+
+    loadLobby({ playerId, callback }) {
+        this.db.loadPlayer(playerId, (player) => {
+            console.log(player);
+            callback(
+                [
+                    {
+                        id: player.id,
+                        name: player.name,
+                        status: 'warten'
+                    },
+                    {
+                        id: playerId,
+                        name: 'horst',
+                        status: 'starten'
+                    },
+                    {
+                        id: playerId,
+                        name: 'gerda',
+                        status: 'starten'
+                    },
+                    {
+                        id: playerId,
+                        name: 'peter',
+                        status: 'starten'
+                    }
+                ]
+            )
+        })
+    }
 }
 
-module.exports = Game
+module.exports = Game;

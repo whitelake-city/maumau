@@ -18,6 +18,7 @@ export class KartenVorderseite extends Component {
             <img src={"/karten/" + this.props.karte.art + "/" + this.props.karte.wert + ".svg"}
                  className={"kartenvorderseite"}
                  onClick={this.beiClick}
+                 alt={this.props.karte.art + " " + this.props.karte.wert}
             />
         )
     }

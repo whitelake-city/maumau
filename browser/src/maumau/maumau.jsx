@@ -32,7 +32,8 @@ export class MauMau extends React.Component {
                 }
             },
             spieler: {
-                name: this.props.match.params.spielername,
+                id: this.props.match.params.spielerId,
+                name: this.props.match.params.spielerId,
                 karten: [
                     {
                         art: ART.KARO,
