@@ -13,6 +13,10 @@ code {
     monospace;
 }
 
+body {
+    background-color: #E0E0E0;
+}
+
 body, #root {
     position: absolute;
 }
@@ -28,6 +32,11 @@ body, #root, .router, .maumau {
     justify-content: space-between;
 }
 
+.name {
+    font-size: 2rem;
+    font-family: 'Special Elite', 'Gloria Hallelujah', Tahoma, Verdana;
+}
+
 /*GEGNER*/
 .alleGegner {
     max-height: 30%;
@@ -38,8 +47,11 @@ body, #root, .router, .maumau {
 }
 
 .alleGegner .gegner {
-    max-width: 30%;
+    width: 20%;
+    min-width: 330px;
     margin: 0 25px;
+    background-color: #E0E0E0;
+    border-radius: 15px;
 }
 
 .alleGegner .gegner .karten {
@@ -52,16 +64,16 @@ body, #root, .router, .maumau {
     justify-content: center;
 }
 
-.alleGegner .gegner .karten .karte {
+.alleGegner .gegner .karten .kartenrueckseite {
     width: 75px;
     margin: 0.25rem;
 }
 
 .alleGegner .gegner .karten.ueberlappend {
-    padding-left: 3.5rem;
+    padding-left: 3.8rem;
 }
 
-.alleGegner .gegner .karten.ueberlappend .karte {
+.alleGegner .gegner .karten.ueberlappend .kartenrueckseite {
     position: relative;
     width: 75px;
     margin: 0.25rem;
@@ -76,6 +88,12 @@ body, #root, .router, .maumau {
     justify-content: center;
 }
 
+.kartenstapel .kartenvorderseite, .kartenstapel .kartenrueckseite {
+    width: 15%;
+    margin: 0.5rem;
+}
+
+
 /*SPIELERKARTEN*/
 .spieler {
     display: flex;
@@ -84,6 +102,7 @@ body, #root, .router, .maumau {
     width: 100%;
     max-height: 30%;
     padding-bottom: 1rem;
+    background-color: #E0E0E0;
 }
 
 .spieler .name {
@@ -98,12 +117,12 @@ body, #root, .router, .maumau {
     width: 100%;
 }
 
-.spieler .karten .karte {
+.spieler .karten .kartenvorderseite {
     width: 100px;
-    margin: 0.25rem;
+    margin: 0.35rem;
 }
 
-.spieler .karten .karte:hover {
+.spieler .karten .kartenvorderseite:hover {
     cursor: pointer;
-    box-shadow: 0 0 0.25rem 0.25rem #0ff;
+    box-shadow: 0 0 0.25rem 0.25rem #8BC34A;
 }
