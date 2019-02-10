@@ -7,6 +7,8 @@ import {ART, WERT} from "./konstanten";
 export class MauMau extends React.Component {
     constructor(props) {
         super(props);
+        this.karteGewaehlt = this.karteGewaehlt.bind(this);
+
         this.state = {
             gegner: [
                 {
@@ -28,12 +30,33 @@ export class MauMau extends React.Component {
                     art: ART.HERZ,
                     wert: WERT.ASS
                 }
-            }
+            },
+            spieler: {
+                name: this.props.match.params.spielername,
+                karten: [
+                    {
+                        art: ART.KARO,
+                        wert: WERT.ASS
+                    },
+                    {
+                        art: ART.PIK,
+                        wert: WERT.BUBE
+                    },
+                    {
+                        art: ART.HERZ,
+                        wert: WERT.DAME
+                    },
+                    {
+                        art: ART.KREUZ,
+                        wert: WERT.KOENIG
+                    },
+                ]
+            },
         };
     }
 
     componentDidMount() {
-        // TODO load oponents and sort by name to have a constant order for displaying. maybe provide arbitrary key for sorting.
+        // TODO load all necessary information and sort opponents by name lexicographically for a steady order or provide an arbitrary id
         this.setState(this.state.gegner.sort((a, b) => {
             if (a.name < b.name) {
                 return -1;
@@ -45,14 +68,25 @@ export class MauMau extends React.Component {
         }))
     }
 
+
+    karteGewaehlt(position) {
+        console.log(position);
+        // TODO send picked card to server
+        this.setState(this.state.spieler.karten.splice(position, 1))
+    }
+
     render() {
         return (
             <div className={"maumau"}>
                 <Gegner gegner={this.state.gegner}/>
                 <KartenStapel
                     kartenanzahl={this.state.kartenstapel.kartenanzahl}
-                    aktuellSichtbareKarte={this.state.kartenstapel.aktuellSichtbareKarte}/>
-                <SpielerKarten spielername={this.props.match.params.spielername}/>
+                    aktuellSichtbareKarte={this.state.kartenstapel.aktuellSichtbareKarte}
+                />
+                <SpielerKarten
+                    spieler={this.state.spieler}
+                    beiClick={this.karteGewaehlt}
+                />
             </div>
         )
     }
