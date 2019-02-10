@@ -27,7 +27,7 @@ export class MauMau extends React.Component {
             kartenstapel: {
                 kartenanzahl: 10,
                 aktuellSichtbareKarte: {
-                    art: ART.HERZ,
+                    art: ART.PIK,
                     wert: WERT.ASS
                 }
             },
@@ -68,11 +68,16 @@ export class MauMau extends React.Component {
         }))
     }
 
-
     karteGewaehlt(position) {
-        console.log(position);
         // TODO send picked card to server
-        this.setState(this.state.spieler.karten.splice(position, 1))
+        var karte = this.state.spieler.karten[position];
+
+        this.state.spieler.karten.splice(position, 1);
+        this.setState({
+                          kartenstapel: {
+                              aktuellSichtbareKarte: karte
+                          }
+                      })
     }
 
     render() {
