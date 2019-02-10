@@ -24,7 +24,7 @@ class Game {
     }
 
     startGame({ playerId, callback }) {
-        this.db.startGame(this.deck.createDeck(), playerId, (result) => {
+        this.db.startGame(this.deck.createDeck, playerId, (result) => {
             if (result.ok) {
                 this.subscribeToPlayerReady({ playerId, gameId: result.id })
                 callback(result)
