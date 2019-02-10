@@ -7,6 +7,7 @@ import {ART, WERT} from "./konstanten";
 export class MauMau extends React.Component {
     constructor(props) {
         super(props);
+        console.log('constructor');
         this.karteGewaehlt = this.karteGewaehlt.bind(this);
 
         this.state = {
@@ -57,6 +58,7 @@ export class MauMau extends React.Component {
     }
 
     componentDidMount() {
+        console.log('component did mount');
         // TODO load all necessary information and sort opponents by name lexicographically for a steady order or provide an arbitrary id
         this.setState(this.state.gegner.sort((a, b) => {
             if (a.name < b.name) {
@@ -82,6 +84,7 @@ export class MauMau extends React.Component {
     }
 
     render() {
+        console.log('render');
         return (
             <div className={"maumau"}>
                 <Gegner gegner={this.state.gegner}/>

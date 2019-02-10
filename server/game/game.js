@@ -71,19 +71,19 @@ class Game {
                         status: 'warten'
                     },
                     {
-                        id: playerId,
+                        id: 'a',
                         name: 'horst',
-                        status: 'starten'
+                        status: 'bereit'
                     },
                     {
-                        id: playerId,
+                        id: 'b',
                         name: 'gerda',
-                        status: 'starten'
+                        status: 'bereit'
                     },
                     {
-                        id: playerId,
+                        id: 'c',
                         name: 'peter',
-                        status: 'starten'
+                        status: 'bereit'
                     }
                 ]
             )

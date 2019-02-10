@@ -9,11 +9,12 @@ export class Lobby extends Component {
     constructor(props) {
         super(props);
         this.ladeLobby = this.ladeLobby.bind(this);
+        this.starteSpiel = this.starteSpiel.bind(this);
     }
 
     timer = 0;
-
     state = {
+        spielername: '',
         spieler: [],
     };
 
@@ -21,14 +22,22 @@ export class Lobby extends Component {
         this.props.api.ladeLobby(
             this.props.match.params.spielerId,
             (spieler) => {
-                // if (spieler.every(spieler => spieler.status !== 'starten')) {
-                    this.setState({ spieler: spieler });
-                // } else {
-                //     this.props.history.replace(`maumau/${spieler.id}`)
-                // }
+                if (spieler.every(spieler => spieler.status === 'bereit')) {
+                    this.props.history.push(`/mau-mau/${this.props.match.params.spielerId}`)
+                } else {
+                    this.setState({
+                                      spielername: spieler[0].name,
+                                      spieler: spieler
+                                  });
+                }
             });
 
         this.componentWillMount();
+    };
+
+    starteSpiel = () => {
+        // TODO push new state to server - will start game once everyone is ready
+        this.props.history.push(`/mau-mau/${this.props.match.params.spielerId}`)
     };
 
     componentWillMount() {
@@ -45,7 +54,7 @@ export class Lobby extends Component {
             <Container>
                 <Row>
                     <Col>
-                        <h1>Willkommen in der Lobby {this.props.match.params.spielerId}!</h1>
+                        <h1>Willkommen in der Lobby {this.state.spielername}!</h1>
                     </Col>
                 </Row>
                 <Row>
@@ -64,7 +73,7 @@ export class Lobby extends Component {
                     }
                 )}
                 <Row>
-                    <Col><Button onClick={console.log("I want to start")}/> </Col>
+                    <Col><Button color="success" onClick={this.starteSpiel}>Spiel starten</Button> </Col>
                 </Row>
 
             </Container>
