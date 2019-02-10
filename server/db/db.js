@@ -63,22 +63,43 @@ class Db {
     }
 
     startGame(deck, playerId, callback) {
-        console.log(deck)
-        console.log(playerId)
-        r.table('spiele')
-            .insert({
-                'gestartet': false,
-                'amZug': playerId
-            })
-            .run(this.connection, (err, result) => {
-                if (err) { callback({ ok: false }); this.err(err); return }
-
-                r.table('stapel')
-                    .insert({ ...deck, 'spiel': result.generated_keys[0] })
-                    .run(this.connection, (err, result) => {
-                        if (err) { callback({ ok: false }); this.err(err); return }
-                    })
-            })
+        r.branch(
+            r.db('maumau')
+                .table('spiele')
+                .filter(
+                    r.row('spieler').count().lt(4)
+                        .and(
+                            r.row('gestartet').eq(false)
+                        ))
+                .count().ne(0),
+            r.db('maumau')
+                .table('spiele')
+                .filter(r.row('spieler').count().lt(4)
+                    .and(
+                        r.row('gestartet').eq(false)
+                    ))
+                .limit(1)
+                .update({'spieler':r.row('spieler').append(playerId)}),
+            r.db('maumau')
+                .table('spiele')
+                .insert({
+                    "amZug": playerId,
+                    "gestartet": false,
+                    "spieler": [playerId]
+                })
+                .do((spiel) => {
+                    return r.branch(
+                        spiel('inserted').ne(0),
+                        r.table('stapel')
+                            .insert({ 'spiel': spiel('generated_keys')(0), ...deck }),
+                        { ok: false }
+                    )
+                })
+        ).run(this.connection, (err, result) => {
+            if (err) { callback({ ok: false }); this.err(err); return }
+            console.log(result)
+            // callback({ ok: true, id: result.generated_keys[0] })
+        })
 
     }
 

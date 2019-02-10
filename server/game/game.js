@@ -11,8 +11,8 @@ class Game {
         this.client.on('erstelleSpieler', ({ name }, callback) => {
             this.createPlayer({ name, callback })
         })
-        this.client.on('spielStarten', ({spielerId}, callback) => {
-            this.startGame({ playerId:spielerId, callback })
+        this.client.on('spielStarten', ({ spielerId }, callback) => {
+            this.startGame({ playerId: spielerId, callback })
         })
     }
 
@@ -21,12 +21,11 @@ class Game {
     }
 
     startGame({ playerId, callback }) {
-        this.db.startGame(this.deck.createDeck(),playerId,(deckResult)=>{
-            if(deckResult.ok)
-            {
+        this.db.startGame(this.deck.createDeck(), playerId, (deckResult) => {
+            if (deckResult.ok) {
                 callback(deckResult)
             }
-            
+
         })
         // r.table('spieler').group('spiel').count()
         // r.table('spiele')
