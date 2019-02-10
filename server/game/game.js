@@ -21,33 +21,40 @@ class Game {
     }
 
     startGame({ playerId, callback }) {
-        this.db.startGame(this.deck.createDeck(), playerId, (deckResult) => {
-            if (deckResult.ok) {
-                callback(deckResult)
+        this.db.startGame(this.deck.createDeck(), playerId, (result) => {
+            if (result.ok) {
+                this.subscribeToPlayerReady({ playerId, gameId: result.id })
+                callback(result)
+            } else {
+                callback({ ok: false })
             }
-
         })
-        // r.table('spieler').group('spiel').count()
-        // r.table('spiele')
-        //     .filter({ 'started': false })
-        //     .run(this.connection)
-        //     .then((cursor) => {
-        //         cursor.each()
-        //             .then((row) => {
-        //                 if (row.spieler.length < 4)
-        //                     r.table('spiele').update({ 'spieler': [...row.spieler, playerId] })
-        //                 callback({ 'ok': true, id: row.id })
-        //             }, () => {
-        //                 r.table('spiele')
-        //                     .insert({
-        //                         'spieler': [playerId],
-        //                         'started': false
-        //                     })
-        //                     .run(this.connection, (err, result) => {
-        //                         callback({ ok: true, id: result.generated_keys[0] })
-        //                     })
-        //             })
+    }
+
+    subscribeToPlayerReady({ playerId, gameId }) {
+        this.client.on(`bereit${playerId}`, () => {
+            this.db.playerIsReady(playerId)
+            // this.db.givePlayerCards({ playerId, gameId, number:4 }, (result) => {
+            //     if (result.ok) {
+            //         this.client.emit(`neueKarten`, result)
+            //     }
+            //     else {
+            //         err("Could not hand out cards", result)
+            //     }
+            // })
+        })
+        // this.db.onAllPlayersReady(gameId, () => {
+        //     this.client.emit(`spielGestartet${gameId}`)
+        //     this.db.getCardFromDeck(gameId, (result) => {
+        //         if (result.ok) {
+
+        //         }
         //     })
+        // })
+    }
+
+    err(err, details) {
+        console.log(err, details)
     }
 }
 

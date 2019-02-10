@@ -35,6 +35,9 @@ class ApiComponent extends Component {
 
     spielGestartet = (ergebnis) => {
         console.log(ergebnis)
+        this.props.api.warteAufAlleSpielerBereit(ergebnis,()=>{
+            console.log('Geht los');
+        })
     }
 
     render() {
@@ -67,6 +70,18 @@ class ApiComponent extends Component {
                         </ul>
                     </Col>
                 </Row>
+                <Row>
+                    <h2>Spiele</h2>
+                </Row>
+                {/* <Row>
+                    <Col>
+                        <ul>
+                            {this.state.spieler.map(spieler => (
+                                <Spieler api={this.props.api} spieler={spieler} key={spieler.id} spielGestartet={this.spielGestartet} />
+                            ))}
+                        </ul>
+                    </Col>
+                </Row> */}
             </Container>
         )
     }
@@ -112,6 +127,12 @@ class Api {
             (ergebnis) => {
                 rueckfuf(ergebnis)
             }
+        )
+    }
+    warteAufAlleSpielerBereit(spielId, callback) {
+        this.socket.on(
+            `spielGestartet${spielId}`,
+            callback
         )
     }
 }

@@ -28,6 +28,8 @@ class Db {
                 .forEach(table => r.db(dbName).tableCreate(table))
                 .run(connection)
 
+            r.db(dbName).table('spieler').indexCreate("spielId")
+
             callback(connection)
         }, (err) => {
             console.log('Unable to establish a connection to db', err)
@@ -35,26 +37,10 @@ class Db {
     }
 
     createPlayer(name, callback) {
-        // r.table('spieler')
-        //     .filter({ 'name': name })
-        //     .run(this.connection)
-        //     .then((cursor) => {
-        //         cursor.next()
-        //             .then((row) => {
-        //                 callback({ 'ok': false, id: row.id, 'name': row.name })
-        //             }, () => {
-        //                 r.table('spieler')
-        //                     .insert({
-        //                         'name': name
-        //                     })
-        //                     .run(this.connection, (err, result) => {
-        //                         callback({ ok: true, id: result.generated_keys[0], 'name': name })
-        //                     })
-        //             })
-        //     })
         r.table('spieler')
             .insert({
-                'name': name
+                'name': name,
+                'bereit': false
             })
             .run(this.connection, (err, result) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
@@ -63,44 +49,114 @@ class Db {
     }
 
     startGame(deck, playerId, callback) {
+        // known gap: players can join multiple games
         r.branch(
-            r.db('maumau')
-                .table('spiele')
-                .filter(
-                    r.row('spieler').count().lt(4)
-                        .and(
-                            r.row('gestartet').eq(false)
-                        ))
-                .count().ne(0),
-            r.db('maumau')
-                .table('spiele')
-                .filter(r.row('spieler').count().lt(4)
+            this.existsGameToJoin(),
+            this.addPlayerToOpenGame(playerId),
+            this.createNewGame(deck, playerId)
+        ).run(this.connection, (err, result) => {
+            if (err) { callback({ ok: false }); this.err(err); return }
+            this.getJoinedGame(playerId, result, callback)
+        })
+
+    }
+
+    // is there is a game with less than 4 players
+    existsGameToJoin() {
+        return r.db('maumau')
+            .table('spiele')
+            .filter(
+                r.row('spieler').count().lt(4)
                     .and(
                         r.row('gestartet').eq(false)
                     ))
-                .limit(1)
-                .update({'spieler':r.row('spieler').append(playerId)}),
-            r.db('maumau')
-                .table('spiele')
-                .insert({
-                    "amZug": playerId,
-                    "gestartet": false,
-                    "spieler": [playerId]
-                })
-                .do((spiel) => {
-                    return r.branch(
-                        spiel('inserted').ne(0),
-                        r.table('stapel')
-                            .insert({ 'spiel': spiel('generated_keys')(0), ...deck }),
-                        { ok: false }
-                    )
-                })
-        ).run(this.connection, (err, result) => {
-            if (err) { callback({ ok: false }); this.err(err); return }
-            console.log(result)
-            // callback({ ok: true, id: result.generated_keys[0] })
-        })
+            .count().ne(0)
+    }
 
+    //add the player to the game, and vice versa
+    addPlayerToOpenGame(playerId) {
+        return r.db('maumau')
+            .table('spiele')
+            .filter(r.row('spieler').count().lt(4)
+                .and(
+                    r.row('gestartet').eq(false)
+                ))
+            .limit(1)
+            .update({ 'spieler': r.row('spieler').append(playerId) },
+                { returnChanges: true }
+            ).do((spieleUpdate) => {
+                return r.branch(
+                    spieleUpdate('replaced').ne(0),
+                    r.table('spieler')
+                        .filter({ 'id': playerId })
+                        .update({ spielId: spieleUpdate('changes')(0)('new_val')('id') })
+                        .do(() => {
+                            return { ok: true, id: spieleUpdate('changes')(0)('new_val')('id') }
+                        }),
+                    { ok: false }
+                )
+            })
+    }
+
+    // else create a new game
+    createNewGame(deck, playerId) {
+        return r.db('maumau')
+            .table('spiele')
+            .insert({
+                "amZug": playerId,
+                "gestartet": false,
+                "spieler": [playerId]
+            })
+            .do((spiel) => {
+                return r.branch(
+                    spiel('inserted').ne(0),
+                    r.table('stapel')
+                        .insert({ 'spiel': spiel('generated_keys')(0), ...deck })
+                        .do(() => {
+                            return r.table('spieler')
+                                .filter({ 'id': playerId })
+                                .update({ spielId: spiel('generated_keys')(0) })
+                                .do(() => {
+                                    return { ok: true, id: spiel('generated_keys')(0) }
+                                })
+                        }),
+                    { ok: false }
+                )
+            })
+    }
+
+    getJoinedGame(playerId, result, callback) {
+        r.db('maumau')
+            .table('spiele')
+            .get(result.id)
+            .merge((spiel) => {
+                return {
+                    'mitspieler': r.db('maumau')
+                        .table('spieler')
+                        .filter((spieler)=>{
+                            return spieler('spielId').eq(spiel('id')).and(spieler('id').ne(playerId))
+                        })
+                        .pluck('name','bereit')
+                        .coerceTo('array'),
+                    'amZug': r.db('maumau').table('spieler').get(spiel('amZug')).getField('name')
+                }
+            })
+            .without('spieler')
+            .run(this.connection, (err, joinedGame) => {
+                if (err) { callback({ ok: false }); this.err(err); return }
+                callback({ ok: true, ...joinedGame })
+            })
+    }
+
+    playerIsReady(id) {
+        r.db('maumau')
+            .table('spieler')
+            .filter(r.row('id').eq(id))
+            .update({ 'bereit': true })
+            .run(this.connection, (err, result) => {
+                if (err) { this.err(err); return }
+                callback({ ok: true })
+            })
     }
 
     err(err) {
