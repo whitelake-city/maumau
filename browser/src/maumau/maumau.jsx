@@ -14,7 +14,7 @@ export class MauMau extends React.Component {
                 },
                 {
                     name: "Gegner 1",
-                    kartenanzahl: 3
+                    kartenanzahl: 11
                 },
                 {
                     name: "Gegner 3",

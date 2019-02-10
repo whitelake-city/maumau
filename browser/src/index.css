@@ -13,18 +13,28 @@ code {
     monospace;
 }
 
+body, #root {
+    position: absolute;
+}
+
+body, #root, .router, .maumau {
+    height: 100%;
+    width: 100%;
+}
+
 .maumau {
     display: flex;
-    flex-direction:column;
-    justify-content:space-between;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /*GEGNER*/
 .alleGegner {
-    height: 33%;
+    max-height: 30%;
     width: 100%;
     display: flex;
     justify-content: center;
+    padding-top: 1rem;
 }
 
 .alleGegner .gegner {
@@ -47,10 +57,21 @@ code {
     margin: 0.25rem;
 }
 
+.alleGegner .gegner .karten.ueberlappend {
+    padding-left: 3.5rem;
+}
+
+.alleGegner .gegner .karten.ueberlappend .karte {
+    position: relative;
+    width: 75px;
+    margin: 0.25rem;
+    margin-left: -3.5rem;
+}
+
 
 /*KARTENSTAPEL*/
 .kartenstapel {
-    height: 33%;
+    max-height: 30%;
     display: flex;
     justify-content: center;
 }
@@ -58,10 +79,11 @@ code {
 /*SPIELERKARTEN*/
 .spieler {
     display: flex;
-    flex-direction:column;
-    justify-content:space-between;
+    flex-direction: column;
+    justify-content: space-between;
     width: 100%;
-    height: 33%;
+    max-height: 30%;
+    padding-bottom: 1rem;
 }
 
 .spieler .name {

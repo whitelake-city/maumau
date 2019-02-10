@@ -15,7 +15,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div className="container-fluid">
+        <div className={"router"}>
           <Route exact path="/" component={Lobby} />
           <Route path="/mau-mau/:spielername" render={(props) => <MauMau {...props} />} />
           {/*<Route path="/api" component={props => <ApiComponent {...props} api={this.state.api} />} />*/}
