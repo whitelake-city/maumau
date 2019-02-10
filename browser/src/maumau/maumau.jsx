@@ -2,6 +2,7 @@ import React from 'react';
 import {SpielerKarten} from "./komponenten/spielerkarten/spieler";
 import {Gegner} from "./komponenten/gegnerkarten/gegner";
 import {KartenStapel} from "./komponenten/kartenstapel/kartenstapel";
+import {ART, WERT} from "./konstanten";
 
 export class MauMau extends React.Component {
     constructor(props) {
@@ -9,18 +10,25 @@ export class MauMau extends React.Component {
         this.state = {
             gegner: [
                 {
-                    name: "Gegner 2",
+                    name: "Horst",
                     kartenanzahl: 2
                 },
                 {
-                    name: "Gegner 1",
+                    name: "Peter",
                     kartenanzahl: 11
                 },
                 {
-                    name: "Gegner 3",
+                    name: "Gertrude",
                     kartenanzahl: 8
                 },
             ],
+            kartenstapel: {
+                kartenanzahl: 10,
+                aktuellSichtbareKarte: {
+                    art: ART.HERZ,
+                    wert: WERT.ASS
+                }
+            }
         };
     }
 
@@ -41,7 +49,9 @@ export class MauMau extends React.Component {
         return (
             <div className={"maumau"}>
                 <Gegner gegner={this.state.gegner}/>
-                <KartenStapel/>
+                <KartenStapel
+                    kartenanzahl={this.state.kartenstapel.kartenanzahl}
+                    aktuellSichtbareKarte={this.state.kartenstapel.aktuellSichtbareKarte}/>
                 <SpielerKarten spielername={this.props.match.params.spielername}/>
             </div>
         )

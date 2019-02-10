@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 
-export class Karte extends Component {
+export class KartenVorderseite extends Component {
     constructor(props) {
         super(props);
 
@@ -8,7 +8,9 @@ export class Karte extends Component {
     }
 
     beiClick() {
-        this.props.beiClick(this.props.position);
+        if (this.props.beiClick !== undefined && this.props.position !== undefined) {
+            this.props.beiClick(this.props.position);
+        }
     }
 
     render() {

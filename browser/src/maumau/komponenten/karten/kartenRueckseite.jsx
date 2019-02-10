@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 
-export class Karte extends Component {
+export class KartenRueckseite extends Component {
     render() {
         return (
             <img src={"/karten/rueckseite.svg"} className={"karte"}/>

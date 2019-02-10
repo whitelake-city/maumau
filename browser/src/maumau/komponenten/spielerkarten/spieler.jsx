@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Karte} from "./karte";
+import {KartenVorderseite} from "../karten/kartenVorderseite";
 import {ART, WERT} from "../../konstanten";
 
 export class SpielerKarten extends Component {
@@ -52,7 +52,7 @@ export class SpielerKarten extends Component {
                 <div className={"karten"}>
                     {
                         this.state.karten.map(
-                            (aktuelleKarte, idx) => (<Karte key={idx} position={idx} karte={aktuelleKarte} beiClick={this.karteGewaehlt}/>)
+                            (aktuelleKarte, idx) => (<KartenVorderseite key={idx} position={idx} karte={aktuelleKarte} beiClick={this.karteGewaehlt}/>)
                         )
                     }
                 </div>

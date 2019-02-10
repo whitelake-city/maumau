@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Karte} from "./karte";
+import {KartenRueckseite} from "../karten/kartenRueckseite";
 
 export class GegnerKarten extends React.Component {
 
@@ -9,7 +9,7 @@ export class GegnerKarten extends React.Component {
                 <div className={"karten " + (this.props.gegner.kartenanzahl > 3 ? 'ueberlappend' : '')}>
                     {
                         [...Array(this.props.gegner.kartenanzahl)]
-                            .map((x, idx) => <Karte key={idx}/>)
+                            .map((x, idx) => <KartenRueckseite key={idx}/>)
                     }
                 </div>
                 <h1 className={"name"}>{this.props.gegner.name}</h1>
