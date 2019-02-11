@@ -32,7 +32,7 @@ class Db {
 
             callback(connection)
         }, (err) => {
-            console.log('Unable to establish a connection to db', err)
+            err.log('Unable to establish a connection to db', err)
         })
     }
 
@@ -140,8 +140,8 @@ class Db {
             .get(gameId)
             .merge((spiel) => {
                 return {
-                    'mitspieler': r.db('maumau')
-                        .table('spieler')
+                    'spieler': r.table('spieler').get(playerId),
+                    'mitspieler': r.table('spieler')
                         .filter((spieler) => {
                             return spieler('spielId').eq(spiel('id')).and(spieler('id').ne(playerId))
                         })
@@ -150,7 +150,7 @@ class Db {
                     'amZug': r.db('maumau').table('spieler').get(spiel('amZug')).getField('name')
                 }
             })
-            .without('spieler')
+            // .without('spieler')
             .run(this.connection, (err, joinedGame) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
                 callback({ ok: true, ...joinedGame })

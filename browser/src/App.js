@@ -11,26 +11,49 @@ class App extends Component {
     super(props)
     this.state = {
       api: new Api(),
-      spieler: {}
-    };
-  }
 
-  componentDidMount() {
+      spiel: {
+        mitspieler: [],
+        spieler: {
+          id: '',
+          name: ''
+        }
+      }
+    };
     this.state.api.connect()
   }
 
-  gehInDieLobby = (spieler) => {
-    this.setState({
-      spieler: spieler
-    })
+  componentDidMount() {
+
+  }
+
+  setzeErstelltenSpieler = (spielerId) => {
+    this.state.api.spielStarten(spielerId, this.aktualisiereLobby)
+  }
+
+  aktualisiereLobby = (spiel) => {
+    console.log(spiel)
+    this.setState({ spiel: spiel })
   }
 
   render() {
     return (
       <Router>
         <div className={"router"}>
-          <Route exact path="/" component={props => <Welcome {...props} setzeErstelltenSpieler={this.gehInDieLobby} api={this.state.api} />} />
-          <Route path="/lobby/:spielerId" component={props => <Lobby {...props} api={this.state.api} spieler={this.state.spieler} />} />
+          <Route exact path="/" component={props => <Welcome {...props} setzeErstelltenSpieler={this.setzeErstelltenSpieler} api={this.state.api} />} />
+          <Route
+            path="/lobby/:spielerId"
+            component={
+              props =>
+                <Lobby
+                  {...props}
+                  setzeErstelltenSpieler={this.setzeErstelltenSpieler}
+                  api={this.state.api}
+                  spiel={this.state.spiel}
+                  spieler={this.state.spieler}
+                />
+            }
+          />
           <Route path="/mau-mau/:spielerId" component={props => <MauMau {...props} />} />
           <Route path="/api" component={props => <ApiComponent {...props} api={this.state.api} />} />
         </div>

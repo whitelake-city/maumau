@@ -112,7 +112,7 @@ class Api {
         this.socket = openSocket('http://localhost:8000')
     }
 
-    erstelleSpieler(name, rueckruf) {
+    erstelleSpieler = (name, rueckruf)  => {
         this.socket.emit(
             'erstelleSpieler',
             { name },
@@ -122,7 +122,7 @@ class Api {
         )
     }
 
-    spielStarten(spielerId, rueckruf) {
+    spielStarten = (spielerId, rueckruf) => {
         this.socket.emit(
             'spielStarten',
             { spielerId },
@@ -139,7 +139,7 @@ class Api {
     //         }
     //     )
     // }
-    warteAufAlleSpielerBereit(spielId, callback) {
+    warteAufAlleSpielerBereit = (spielId, callback) => {
         this.socket.on(
             `spielGestartet${spielId}`,
             callback

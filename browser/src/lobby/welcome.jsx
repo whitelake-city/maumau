@@ -23,8 +23,8 @@ export class Welcome extends Component {
     }
 
     geheInDieLobby = (spieler) => {
+        this.props.setzeErstelltenSpieler(spieler.id)
         this.props.history.push(`/lobby/${spieler.id}`)
-        this.props.setzeErstelltenSpieler(spieler)
     };
 
     render() {
