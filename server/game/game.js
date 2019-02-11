@@ -14,9 +14,6 @@ class Game {
         this.client.on('spielStarten', ({ spielerId }, callback) => {
             this.startGame({ playerId: spielerId, callback })
         });
-        this.client.on('ladeLobby', ({ spielerId }, callback) => {
-            this.loadLobby({ playerId: spielerId, callback })
-        });
     }
 
     createPlayer({ name, callback }) {
@@ -58,36 +55,6 @@ class Game {
 
     err(err, details) {
         console.log(err, details)
-    }
-
-    loadLobby({ playerId, callback }) {
-        this.db.loadPlayer(playerId, (player) => {
-            console.log(player);
-            callback(
-                [
-                    {
-                        id: player.id,
-                        name: player.name,
-                        status: 'warten'
-                    },
-                    {
-                        id: 'a',
-                        name: 'horst',
-                        status: 'bereit'
-                    },
-                    {
-                        id: 'b',
-                        name: 'gerda',
-                        status: 'bereit'
-                    },
-                    {
-                        id: 'c',
-                        name: 'peter',
-                        status: 'bereit'
-                    }
-                ]
-            )
-        })
     }
 }
 

@@ -7,8 +7,6 @@ export class Welcome extends Component {
 
     constructor(props) {
         super(props);
-        this.setzeSpielernamen = this.setzeSpielernamen.bind(this);
-        this.geheInDieLobby = this.geheInDieLobby.bind(this);
     }
 
     state = {
@@ -19,11 +17,14 @@ export class Welcome extends Component {
         this.setState({ spielername: event.target.value })
     };
 
-    geheInDieLobby = (event) => {
-        event.preventDefault();
-        this.props.api.erstelleSpieler(this.state.spielername, (spieler) => {
-            this.props.history.push(`/lobby/${spieler.id}`)
-        })
+    erstelleSpieler = (event) => {
+        event.preventDefault()
+        this.props.api.erstelleSpieler(this.state.spielername, this.geheInDieLobby)
+    }
+
+    geheInDieLobby = (spieler) => {
+        this.props.history.push(`/lobby/${spieler.id}`)
+        this.props.setzeErstelltenSpieler(spieler)
     };
 
     render() {
@@ -35,7 +36,7 @@ export class Welcome extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <form onSubmit={this.geheInDieLobby}>
+                            <form onSubmit={this.erstelleSpieler}>
                                 <InputGroup>
                                     <Input placeholder="Spielername" onChange={this.setzeSpielernamen} required/>
                                 </InputGroup>

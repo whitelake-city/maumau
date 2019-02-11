@@ -1,6 +1,6 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import openSocket from 'socket.io-client';
-import {Button, Col, Container, Input, InputGroup, Row} from 'reactstrap';
+import { Button, Col, Container, Input, InputGroup, Row } from 'reactstrap';
 
 class ApiComponent extends Component {
     constructor(props) {
@@ -29,13 +29,13 @@ class ApiComponent extends Component {
 
     setzeSpielernamen = (ereignis) => {
         this.setState({
-                          spielername: ereignis.target.value
-                      })
+            spielername: ereignis.target.value
+        })
     };
 
     spielGestartet = (ergebnis) => {
         console.log(ergebnis)
-        this.props.api.warteAufAlleSpielerBereit(ergebnis,()=>{
+        this.props.api.warteAufAlleSpielerBereit(ergebnis, () => {
             console.log('Geht los');
         })
     }
@@ -50,7 +50,7 @@ class ApiComponent extends Component {
                     <Col>
                         <form onSubmit={this.erstelleSpieler}>
                             <InputGroup>
-                                <Input placeholder="Spielername" onChange={this.setzeSpielernamen} required/>
+                                <Input placeholder="Spielername" onChange={this.setzeSpielernamen} required />
                             </InputGroup>
                             <InputGroup>
                                 <Button color="success" disabled={this.state.spielername.length < 1}>Spieler erstellen</Button>
@@ -65,7 +65,7 @@ class ApiComponent extends Component {
                     <Col>
                         <ul>
                             {this.state.spieler.map(spieler => (
-                                <Spieler api={this.props.api} spieler={spieler} key={spieler.id} spielGestartet={this.spielGestartet}/>
+                                <Spieler api={this.props.api} spieler={spieler} key={spieler.id} spielGestartet={this.spielGestartet} />
                             ))}
                         </ul>
                     </Col>
@@ -126,21 +126,19 @@ class Api {
         this.socket.emit(
             'spielStarten',
             { spielerId },
-            (ergebnis) => {
-                rueckruf(ergebnis)
-            }
+            rueckruf
         )
     }
 
-    ladeLobby(spielerId, rueckruf) {
-        this.socket.emit(
-            'ladeLobby',
-            { spielerId },
-            (ergebnis) => {
-                rueckruf(ergebnis)
-            }
-        )
-    }
+    // ladeLobby(spielerId, rueckruf) {
+    //     this.socket.emit(
+    //         'ladeLobby',
+    //         { spielerId },
+    //         (ergebnis) => {
+    //             rueckruf(ergebnis)
+    //         }
+    //     )
+    // }
     warteAufAlleSpielerBereit(spielId, callback) {
         this.socket.on(
             `spielGestartet${spielId}`,
@@ -149,4 +147,4 @@ class Api {
     }
 }
 
-export {ApiComponent, Api}
+export { ApiComponent, Api }

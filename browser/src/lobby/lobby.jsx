@@ -8,53 +8,55 @@ export class Lobby extends Component {
 
     constructor(props) {
         super(props);
-        this.ladeLobby = this.ladeLobby.bind(this);
-        this.starteSpiel = this.starteSpiel.bind(this);
+        // this.props.api.spielStarten(this.props.spieler.id, this.ladeLobby)
     }
 
-    timer = 0;
+    // timer = 0;
     state = {
-        spielername: '',
-        spieler: [],
+        spieler: this.props.spieler,
+        spiel: {
+            spieler: [],
+        }
     };
 
-    ladeLobby = () => {
-        this.props.api.ladeLobby(
-            this.props.match.params.spielerId,
-            (spieler) => {
-                if (spieler.every(spieler => spieler.status === 'bereit')) {
-                    this.props.history.push(`/mau-mau/${this.props.match.params.spielerId}`)
-                } else {
-                    this.setState({
-                                      spielername: spieler[0].name,
-                                      spieler: spieler
-                                  });
-                }
-            });
+    ladeLobby = (spiel) => {
+        console.log(spiel)
+        // this.props.api.ladeLobby(
+        //     this.props.match.params.spielerId,
+        //     (spieler) => {
+        //         if (spieler.every(spieler => spieler.status === 'bereit')) {
+        //             this.props.history.push(`/mau-mau/${this.props.match.params.spielerId}`)
+        //         } else {
+        //             this.setState({
+        //                               spielername: spieler[0].name,
+        //                               spieler: spieler
+        //                           });
+        //         }
+        //     });
 
-        this.componentWillMount();
+        // this.componentWillMount();
     };
 
     starteSpiel = () => {
         // TODO push new state to server - will start game once everyone is ready
-        this.props.history.push(`/mau-mau/${this.props.match.params.spielerId}`)
+        // this.props.history.push(`/mau-mau/${this.props.match.params.spielerId}`)
     };
 
-    componentWillMount() {
-        this.timer = setTimeout(this.ladeLobby, 1000);
-    }
+    // componentWillMount() {
+    //     this.timer = setTimeout(this.ladeLobby, 1000);
+    // }
 
-    componentWillUnmount() {
-        // remove timer
-        clearTimeout(this.timer);
-    }
+    // componentWillUnmount() {
+    //     // remove timer
+    //     clearTimeout(this.timer);
+    // }
 
     render() {
         return (
             <Container>
                 <Row>
                     <Col>
-                        <h1>Willkommen in der Lobby {this.state.spielername}!</h1>
+                        <h1>Willkommen in der Lobby {this.state.spieler.name}!</h1>
                     </Col>
                 </Row>
                 <Row>
@@ -62,10 +64,10 @@ export class Lobby extends Component {
                         <h3>Spieler:</h3>
                     </Col>
                 </Row>
-                {this.state.spieler.map(
+                {this.state.spiel.spieler.map(
                     (spieler) => {
                         return (
-                            <Row key={spieler.id}>
+                            <Row key={spieler.name}>
                                 <Col>{spieler.name}</Col>
                                 <Col>{spieler.status}</Col>
                             </Row>
