@@ -30,11 +30,12 @@ class ApiComponent extends Component {
     };
 
     spielGestartet = (ergebnis) => {
-        console.log(ergebnis)
         this.props.api.warteAufAlleSpielerBereit(ergebnis, () => {
             console.log('Geht los');
         })
     }
+
+
 
     render() {
         return (
@@ -108,7 +109,7 @@ class Api {
         this.socket = openSocket('http://localhost:8000')
     }
 
-    erstelleSpieler = (name, rueckruf)  => {
+    erstelleSpieler = (name, rueckruf) => {
         this.socket.emit(
             'erstelleSpieler',
             { name },
@@ -118,12 +119,16 @@ class Api {
         )
     }
 
-    spielStarten = (spielerId, rueckruf) => {
+    sucheSpiel = (spielerId, rueckruf) => {
         this.socket.emit(
-            'spielStarten',
+            'sucheSpiel',
             { spielerId },
             rueckruf
         )
+    }
+
+    spielerIstBereit = (spielerId) => {
+        this.socket.emit('spielerIstBereit',{spielerId})
     }
 
     // ladeLobby(spielerId, rueckruf) {
@@ -135,9 +140,9 @@ class Api {
     //         }
     //     )
     // }
-    warteAufAlleSpielerBereit = (spielId, callback) => {
+    warteAufSpielStart = (spielerId, callback) => {
         this.socket.on(
-            `spielGestartet${spielId}`,
+            `spielGestartet${spielerId}`,
             callback
         )
     }

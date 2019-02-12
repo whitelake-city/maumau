@@ -8,12 +8,17 @@ export class Lobby extends Component {
     constructor(props) {
         super(props)
         if (!props.spiel.id) {
-            this.props.setzeErstelltenSpieler(this.props.match.params.spielerId)
+            this.props.sucheSpiel(this.props.match.params.spielerId)
         }
+        this.props.api.warteAufSpielStart(this.props.match.params.spielerId, this.props.starteSpiel)
     }
 
-    starteSpiel = () => {
-        console.log("foo");
+    spielerIstBereit = () => {
+        this.props.api.spielerIstBereit(this.props.spiel.spieler.id)
+    }
+
+    starteSpiel = (spiel) =>{
+        console.log(spiel)
     }
 
     render() {
@@ -40,7 +45,7 @@ export class Lobby extends Component {
                     }
                 )}
                 <Row>
-                    <Col><Button color="success" onClick={this.starteSpiel}>Spiel starten</Button> </Col>
+                    <Col><Button color="success" onClick={this.spielerIstBereit}>Spiel starten</Button> </Col>
                 </Row>
 
             </Container>

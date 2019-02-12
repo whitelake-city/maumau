@@ -51,8 +51,7 @@ class Db {
     /**
      * Adds the player to a new game or to an existing game
      */
-    startGame(getDeckFunction, playerId, callback) {
-
+    getOrCreateGame(getDeckFunction, playerId, callback) {
         r.table('spiele')
             .filter((row) => {
                 return row('spieler').contains(playerId)
@@ -159,10 +158,9 @@ class Db {
                         })
                         .pluck('name', 'bereit')
                         .coerceTo('array'),
-                    'amZug': r.db('maumau').table('spieler').get(spiel('amZug')).getField('name')
+                    'amZug': r.table('spieler').get(spiel('amZug')).getField('name')
                 }
             })
-            // .without('spieler')
             .run(this.connection, (err, joinedGame) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
                 callback({ ok: true, ...joinedGame })
@@ -173,9 +171,35 @@ class Db {
         r.table('spieler')
             .filter(r.row('id').eq(id))
             .update({ 'bereit': true })
-            .run(this.connection, (err, result) => {
+            .run(this.connection, (err) => {
                 if (err) { this.err(err); return }
-                callback({ ok: true })
+            })
+    }
+
+    subscribeToGameStarted(gameId, callback) {
+        r.table('spiele')
+            .filter((row) => {
+                return row('id').eq(gameId).and(row('spieler').count().gt(1))
+            })
+            .changes()
+            .run(this.connection, (err, cursor) => {
+                if (err) { callback({ ok: false }); this.err(err); return }
+                cursor.each((err, change) => {
+                    console.log(change)
+                    r.table('spieler')
+                        .filter((row) => {
+                            return row('spielId').eq(gameId).and(row('bereit').eq(false))
+                        })
+                        .pluck('id')
+                        .coerceTo('array')
+                        .run(this.connection, (err, notReady) => {
+                            if(notReady.length == 0) {
+                                callback("")
+                                cursor.close()
+                            }
+                        })
+
+                })
             })
     }
 

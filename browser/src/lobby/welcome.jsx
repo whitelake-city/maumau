@@ -8,6 +8,10 @@ export class Welcome extends Component {
         spielername: "",
     };
 
+    componentDidMount() {
+        this.props.setzeSpielerZurueck();
+    }
+
     setzeSpielernamen = (event) => {
         this.setState({ spielername: event.target.value })
     };
@@ -18,7 +22,6 @@ export class Welcome extends Component {
     }
 
     geheInDieLobby = (spieler) => {
-        this.props.setzeErstelltenSpieler(spieler.id)
         this.props.history.push(`/lobby/${spieler.id}`)
     };
 
