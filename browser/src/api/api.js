@@ -3,10 +3,6 @@ import openSocket from 'socket.io-client';
 import { Button, Col, Container, Input, InputGroup, Row } from 'reactstrap';
 
 class ApiComponent extends Component {
-    constructor(props) {
-        super(props)
-    }
-
     state = {
         spielername: '',
         spieler: []

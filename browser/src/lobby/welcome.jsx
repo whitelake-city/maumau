@@ -4,11 +4,6 @@ import {Button, Col, Container, Input, InputGroup, Row} from 'reactstrap';
 import {KartenRueckseite} from "../maumau/komponenten/karten/kartenRueckseite";
 
 export class Welcome extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
     state = {
         spielername: "",
     };

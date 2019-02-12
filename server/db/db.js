@@ -52,24 +52,36 @@ class Db {
      * Adds the player to a new game or to an existing game
      */
     startGame(getDeckFunction, playerId, callback) {
-        // known gap: players can join multiple games
-        r.branch(
-            this.existsGameToJoin(),
-            this.addPlayerToExistingGame(playerId),
-            this.createNewGame(getDeckFunction, playerId)
-        ).run(this.connection, (err, result) => {
-            if (err) { callback({ ok: false }); this.err(err); return }
-            this.getJoinedGame(playerId, result.id, callback)
-        })
 
+        r.table('spiele')
+            .filter((row) => {
+                return row('spieler').contains(playerId)
+            })
+            .limit(1)
+            .coerceTo('array')
+            .run(this.connection, (err, spiele) => {
+                if (err) { callback({ ok: false }); this.err(err); return }
+
+                if (spiele.length > 0) {
+                    this.getJoinedGame(playerId, spiele[0].id, callback)
+                } else {
+                    r.branch(
+                        this.existsGameToJoin(),
+                        this.addPlayerToExistingGame(playerId),
+                        this.createNewGame(getDeckFunction, playerId)
+                    ).run(this.connection, (err, result) => {
+                        if (err) { callback({ ok: false }); this.err(err); return }
+                        this.getJoinedGame(playerId, result.id, callback)
+                    })
+                }
+            })
     }
 
     /**
      * @returns true if is there is a game with less than 4 players
      */
     existsGameToJoin() {
-        return r.db('maumau')
-            .table('spiele')
+        return r.table('spiele')
             .filter(
                 r.row('spieler').count().lt(4)
                     .and(

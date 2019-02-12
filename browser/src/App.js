@@ -32,7 +32,6 @@ class App extends Component {
   }
 
   aktualisiereLobby = (spiel) => {
-    console.log(spiel)
     this.setState({ spiel: spiel })
   }
 

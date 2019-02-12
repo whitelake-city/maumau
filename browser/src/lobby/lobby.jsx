@@ -7,9 +7,9 @@ import Button from "reactstrap/es/Button";
 export class Lobby extends Component {
     constructor(props) {
         super(props)
-        // if (!props.spiel.id) {
-        //     this.props.setzeErstelltenSpieler(this.props.match.params.spielerId)
-        // }
+        if (!props.spiel.id) {
+            this.props.setzeErstelltenSpieler(this.props.match.params.spielerId)
+        }
     }
 
     starteSpiel = () => {
