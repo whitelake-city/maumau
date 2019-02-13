@@ -25,16 +25,17 @@ class Game {
 
     searchGame({ playerId, callback }) {
         this.db.getOrCreateGame(this.deck.createDeck, playerId, (result) => {
-            if (result.ok) {
-                this.subscribeToPlayerReady({ playerId, gameId: result.id })
+            if (result.ok === true) {
+                this.subscribeToGameStarted({ playerId, gameId: result.id })
                 callback(result)
             } else {
+                this.err(result)
                 callback({ ok: false })
             }
         })
     }
 
-    subscribeToPlayerReady({ playerId, gameId }) {
+    subscribeToGameStarted({ playerId, gameId }) {
         this.db.subscribeToGameStarted(gameId, (state) => {
             if (state.ok) {
                 this.db.getJoinedGame(playerId, gameId, (game)=>{
