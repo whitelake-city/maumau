@@ -177,28 +177,26 @@ class Db {
     }
 
     subscribeToGameStarted(gameId, callback) {
-        r.table('spiele')
-            .filter((row) => {
-                return row('id').eq(gameId).and(row('spieler').count().gt(1))
-            })
+        r.table('spieler')
+            .filter(r.row('spielId').eq(gameId))
             .changes()
             .run(this.connection, (err, cursor) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
                 cursor.each((err, change) => {
-                    console.log(change)
-                    r.table('spieler')
-                        .filter((row) => {
-                            return row('spielId').eq(gameId).and(row('bereit').eq(false))
-                        })
-                        .pluck('id')
-                        .coerceTo('array')
-                        .run(this.connection, (err, notReady) => {
-                            if(notReady.length == 0) {
-                                callback("")
-                                cursor.close()
-                            }
-                        })
-
+                    if (change.new_val.bereit === true && change.old_val.bereit === false) {
+                        r.table('spiele')
+                            .filter((spiel) => {
+                                return spiel('id').eq(gameId).and(spiel('spieler').count().gt(1))
+                            })
+                            .update({ 'gestartet': true })
+                            .pluck('id')
+                            .coerceTo('array')
+                            .run(this.connection, (err, id) => {
+                                if (err) { callback({ ok: false }); this.err(err); return }
+                                callback({ ok: true })
+                                cursor.close();
+                            })
+                    }
                 })
             })
     }

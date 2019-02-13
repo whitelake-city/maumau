@@ -45,8 +45,8 @@ class App extends Component {
     this.setState({ spiel: spiel })
   }
 
-  starteSpiel= () => {
-    console.log('spiel gestartet');
+  starteSpiel= (spiel) => {
+    console.log(spiel);
   }
 
   render() {

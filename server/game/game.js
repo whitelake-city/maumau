@@ -35,9 +35,12 @@ class Game {
     }
 
     subscribeToPlayerReady({ playerId, gameId }) {
-        this.db.subscribeToGameStarted(gameId, (spiel) => {
-            console.log(spiel)
-            // this.client.emit(`spielGestartet${playerId}`, spiel)
+        this.db.subscribeToGameStarted(gameId, (state) => {
+            if (state.ok) {
+                this.db.getJoinedGame(playerId, gameId, (game)=>{
+                    this.client.emit(`spielGestartet${playerId}`, game)
+                })
+            }
         })
     }
 
