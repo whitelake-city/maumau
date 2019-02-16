@@ -31,26 +31,29 @@ export class Lobby extends Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
-                        <h3>Spieler:</h3>
+                    <Col xs="9">
+                        <strong>Spieler:</strong>
+                    </Col>
+                    <Col xs="3">
+                        <strong>Status:</strong>
                     </Col>
                 </Row>
                 <Row key={this.props.spiel.spieler.name}>
-                    <Col>{this.props.spiel.spieler.name}</Col>
-                    <Col>{this.props.spiel.spieler.bereit ? "bereit" : "wartet"}</Col>
+                    <Col xs="9">{this.props.spiel.spieler.name} (du)</Col>
+                    <Col xs="3">{this.props.spiel.spieler.bereit ? "bereit" : "wartet"}</Col>
                 </Row>
                 {this.props.spiel.mitspieler.map(
                     (spieler) => {
                         return (
                             <Row key={spieler.name}>
-                                <Col>{spieler.name}</Col>
-                                <Col>{spieler.bereit ? "bereit" : "wartet"}</Col>
+                                <Col xs="9">{spieler.name}</Col>
+                                <Col xs="3">{spieler.bereit ? "bereit" : "wartet"}</Col>
                             </Row>
                         );
                     }
                 )}
-                <Row>
-                    <Col><Button color="info" disabled={this.props.spiel.spieler.bereit} onClick={this.spielerIstBereit}>Spiel starten</Button></Col>
+                <Row className={"aktionen"}>
+                    <Col sm={{ size: 'auto', offset: 5 }}><Button disabled={this.props.spiel.spieler.bereit} onClick={this.spielerIstBereit}>Spiel starten</Button></Col>
                 </Row>
             </Container>
         );

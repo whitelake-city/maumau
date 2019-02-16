@@ -31,6 +31,11 @@ h1 {
     font-family: 'Special Elite', 'Gloria Hallelujah', Tahoma, Verdana !important;
 }
 
+.maumau {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
 /* WELCOME */
 .welcome {
@@ -91,17 +96,30 @@ h1 {
     color: #1b1e21;
 }
 
-
-.maumau {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
 .name {
     font-size: 2rem;
     font-family: 'Special Elite', 'Gloria Hallelujah', Tahoma, Verdana;
 }
+
+/* LOBBY */
+.lobby-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px !important;
+    padding: 30px !important;
+    border: 3px solid #2a2a2a;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    background-color: #52cc70;
+}
+
+.lobby-wrapper .aktionen {
+    padding-top: 15px;
+}
+
 
 /* GEGNER */
 .alleGegner {
@@ -116,8 +134,10 @@ h1 {
     width: 20%;
     min-width: 330px;
     margin: 0 25px;
-    background-color: #E0E0E0;
+    background-color: #52cc70;
+    border: 3px solid #2a2a2a;
     border-radius: 15px;
+
 }
 
 .alleGegner .gegner .karten {
@@ -133,6 +153,7 @@ h1 {
 .alleGegner .gegner .karten .kartenrueckseite {
     width: 75px;
     margin: 0.25rem;
+    height: 110px;
 }
 
 .alleGegner .gegner .karten.ueberlappend {
@@ -142,8 +163,8 @@ h1 {
 .alleGegner .gegner .karten.ueberlappend .kartenrueckseite {
     position: relative;
     width: 75px;
-    margin: 0.25rem;
-    margin-left: -3.5rem;
+    height: 110px;
+    margin: 0.25rem 0.25rem 0.25rem -3.5rem;
 }
 
 
@@ -168,7 +189,8 @@ h1 {
     width: 100%;
     max-height: 30%;
     padding-bottom: 1rem;
-    background-color: #E0E0E0;
+    background-color: #52cc70;
+    border-top: 3px solid #2a2a2a;
 }
 
 .spieler .name {
