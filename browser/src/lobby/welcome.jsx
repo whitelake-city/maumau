@@ -28,16 +28,16 @@ export class Welcome extends Component {
     render() {
         return (
             <div className={"welcome"}>
+                <KartenRueckseite/>
                 <div className={"titel"}>
                     Mau<br/>Mau
                 </div>
-                <KartenRueckseite/>
                 <form onSubmit={this.erstelleSpieler} className={"spielerdaten"}>
                     <InputGroup>
                         <Input placeholder="Spielername" onChange={this.setzeSpielernamen} required/>
                     </InputGroup>
                     <InputGroup>
-                        <Button color="primary" disabled={this.state.spielername.length < 1}>Neues Siel erstellen</Button>
+                        <Button disabled={this.state.spielername.length < 1}>Neues Siel erstellen</Button>
                     </InputGroup>
                 </form>
             </div>
