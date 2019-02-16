@@ -167,37 +167,78 @@ class Db {
             })
     }
 
-    playerIsReady(id) {
+    playerIsReady(id, callback) {
         r.table('spieler')
             .filter(r.row('id').eq(id))
-            .update({ 'bereit': true })
-            .run(this.connection, (err) => {
+            .update({ 'bereit': true }, { returnChanges: true })
+            .run(this.connection, (err, changes) => {
                 if (err) { this.err(err); return }
+                if (changes.unchanged === 1) {
+                    callback({ ok: false })
+                } else {
+                    callback({ ok: true, spielId: changes.changes[0].new_val.spielId })
+                }
             })
     }
 
-    subscribeToGameStarted(gameId, callback) {
+    subscribeToGameChanges(gameId, callback) {
         r.table('spieler')
             .filter(r.row('spielId').eq(gameId))
             .changes()
             .run(this.connection, (err, cursor) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
                 cursor.each((err, change) => {
-                    if (change.new_val.bereit === true && change.old_val.bereit === false) {
-                        r.table('spiele')
-                            .filter((spiel) => {
-                                return spiel('id').eq(gameId).and(spiel('spieler').count().gt(1))
-                            })
-                            .update({ 'gestartet': true })
-                            .pluck('id')
-                            .coerceTo('array')
-                            .run(this.connection, (err, id) => {
-                                if (err) { callback({ ok: false }); this.err(err); return }
-                                callback({ ok: true })
-                                cursor.close();
-                            })
+                    if (change.new_val && change.new_val.bereit === true && change.old_val.bereit === false) {
+                        r.branch(
+                            r.table('spieler')
+                                .filter(
+                                    r.row('spielId').eq(gameId).and(r.row('bereit').eq(false))
+                                ).count().eq(0),
+                            r.table('spieler')
+                                .filter(
+                                    r.row('spielId').eq(gameId)
+                                ).count().gt(1),
+                            false
+                        ).run(this.connection, (err, result) => {
+                            if (err) { callback({ ok: false }); this.err(err); return }
+                            if(result) cursor.close()
+                            callback({ok:true,gestartet:result})
+                        })
                     }
                 })
+            })
+
+
+        // r.table('spieler')
+        //     .filter(r.row('spielId').eq(gameId))
+        //     .changes()
+        //     .run(this.connection, (err, cursor) => {
+        //         if (err) { callback({ ok: false }); this.err(err); return }
+        //         cursor.each((err, change) => {
+        //             if (change.new_val.bereit === true && change.old_val.bereit === false) {
+        // r.table('spiele')
+        //     .filter((spiel) => {
+        //         return spiel('id').eq(gameId).and(spiel('spieler').count().gt(1))
+        //     })
+        //     .pluck('id')
+        //     .coerceTo('array')
+        //     .run(this.connection, (err, id) => {
+        //         if (err) { callback({ ok: false }); this.err(err); return }
+        //         console.log(id)
+        //         callback({ ok: true })
+        //         cursor.close();
+        //     })
+        //         }
+        //     })
+        // })
+    }
+
+    startGame(gameId) {
+        r.table('spiele')
+            .filter(r.row('id').eq(gameId))
+            .update({ 'gestartet': true })
+            .run(this.connection, (err) => {
+                if (err) { this.err(err); return }
             })
     }
 

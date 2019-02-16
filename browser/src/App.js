@@ -24,7 +24,7 @@ class App extends Component {
   }
 
   setzeSpielerZurueck = () => {
-    if(this.state.spiel.spieler.id !== '') {
+    if (this.state.spiel.spieler.id !== '') {
       this.setState({
         spiel: {
           mitspieler: [],
@@ -38,15 +38,15 @@ class App extends Component {
   }
 
   sucheSpiel = (spielerId) => {
-    this.state.api.sucheSpiel(spielerId, this.aktualisiereLobby)
+    this.state.api.sucheSpiel(spielerId, this.aktualisiereSpiel)
   }
 
-  aktualisiereLobby = (spiel) => {
+  aktualisiereSpiel = (spiel) => {
     this.setState({ spiel: spiel })
   }
 
-  starteSpiel= (spiel) => {
-    console.log(spiel);
+  starteSpiel = (spiel) => {
+    this.setState({ spiel: spiel })
   }
 
   render() {
@@ -62,13 +62,23 @@ class App extends Component {
                   {...props}
                   sucheSpiel={this.sucheSpiel}
                   starteSpiel={this.starteSpiel}
+                  aktualisiereSpiel={this.aktualisiereSpiel}
                   api={this.state.api}
                   spiel={this.state.spiel}
-                  spieler={this.state.spieler}
                 />
             }
           />
-          <Route path="/mau-mau/:spielerId" component={props => <MauMau {...props} />} />
+          <Route
+            path="/mau-mau/:spielerId"
+            component={
+              props =>
+                <MauMau
+                  {...props}
+                  spiel={this.state.spiel}
+                  sucheSpiel={this.sucheSpiel}
+                />
+            }
+          />
           <Route path="/api" component={props => <ApiComponent {...props} api={this.state.api} />} />
         </div>
       </Router>

@@ -104,7 +104,10 @@ class Spieler extends Component {
 
 class Api {
     socket = null;
-
+    subscribedTo = {
+        warteAufSpielStart: false,
+        warteAufSpielerBereit: false
+    }
     connect() {
         this.socket = openSocket('http://localhost:8000')
     }
@@ -128,23 +131,34 @@ class Api {
     }
 
     spielerIstBereit = (spielerId) => {
-        this.socket.emit('spielerIstBereit',{spielerId})
+        this.socket.emit('spielerIstBereit', { spielerId })
     }
 
-    // ladeLobby(spielerId, rueckruf) {
-    //     this.socket.emit(
-    //         'ladeLobby',
-    //         { spielerId },
-    //         (ergebnis) => {
-    //             rueckruf(ergebnis)
-    //         }
-    //     )
-    // }
-    warteAufSpielStart = (spielerId, callback) => {
-        this.socket.on(
-            `spielGestartet${spielerId}`,
-            callback
-        )
+    warteAufSpielStart = (spielId, callback) => {
+        if (this.subscribedTo.warteAufSpielStart === false) {
+            this.socket.once(
+                `spielGestartet${spielId}`,
+                (result) => {
+                    this.subscribedTo.warteAufSpielStart = false
+                    callback(result)
+                }
+            )
+            this.subscribedTo.warteAufSpielStart = true
+        }
+
+    }
+
+    warteAufSpielerBereit = (spielId, callback) => {
+        if (this.subscribedTo.warteAufSpielerBereit === false) {
+            this.socket.once(
+                `spielerBereit${spielId}`,
+                (result)=>{
+                    this.subscribedTo.warteAufSpielerBereit = false
+                    callback(result)
+                }
+            )
+            this.subscribedTo.warteAufSpielerBereit = true
+        }
     }
 }
 

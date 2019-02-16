@@ -9,16 +9,17 @@ export class Lobby extends Component {
         super(props)
         if (!props.spiel.id) {
             this.props.sucheSpiel(this.props.match.params.spielerId)
+        } else {
+            this.props.api.warteAufSpielStart(this.props.spiel.id, (spiel)=>{
+                this.props.starteSpiel(spiel)
+                this.props.history.push(`/mau-mau/${spiel.spieler.id}`)
+            })
+            this.props.api.warteAufSpielerBereit(this.props.spiel.id, this.props.aktualisiereSpiel)
         }
-        this.props.api.warteAufSpielStart(this.props.match.params.spielerId, this.props.starteSpiel)
     }
 
     spielerIstBereit = () => {
-        this.props.api.spielerIstBereit(this.props.spiel.spieler.id)
-    }
-
-    starteSpiel = (spiel) =>{
-        console.log(spiel)
+        this.props.api.spielerIstBereit(this.props.spiel.spieler.id,this.props.aktualisiereSpiel)
     }
 
     render() {
@@ -39,13 +40,13 @@ export class Lobby extends Component {
                         return (
                             <Row key={spieler.name}>
                                 <Col>{spieler.name}</Col>
-                                <Col>{spieler.status}</Col>
+                                <Col>{spieler.bereit===true?'bereit':'nicht bereit'}</Col>
                             </Row>
                         );
                     }
                 )}
                 <Row>
-                    <Col><Button color="success" onClick={this.spielerIstBereit}>Spiel starten</Button> </Col>
+                    <Col><Button color="success" onClick={this.spielerIstBereit} disabled={this.props.spiel.spieler.bereit}>Spiel starten</Button> </Col>
                 </Row>
 
             </Container>

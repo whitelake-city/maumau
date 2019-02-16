@@ -1,15 +1,15 @@
 import React from 'react';
-import {SpielerKarten} from "./komponenten/spielerkarten/spieler";
-import {Gegner} from "./komponenten/gegnerkarten/gegner";
-import {KartenStapel} from "./komponenten/kartenstapel/kartenstapel";
-import {ART, WERT} from "./konstanten";
+import { SpielerKarten } from "./komponenten/spielerkarten/spieler";
+import { Gegner } from "./komponenten/gegnerkarten/gegner";
+import { KartenStapel } from "./komponenten/kartenstapel/kartenstapel";
+import { ART, WERT } from "./konstanten";
 
 export class MauMau extends React.Component {
     constructor(props) {
         super(props);
-        console.log('constructor');
-        this.karteGewaehlt = this.karteGewaehlt.bind(this);
-
+        if (!props.spiel.id) {
+            this.props.sucheSpiel(this.props.match.params.spielerId)
+        }
         this.state = {
             gegner: [
                 {
@@ -33,8 +33,8 @@ export class MauMau extends React.Component {
                 }
             },
             spieler: {
-                id: this.props.match.params.spielerId,
-                name: this.props.match.params.spielerId,
+                id: this.props.spiel.spieler.id,
+                name: this.props.spiel.spieler.name,
                 karten: [
                     {
                         art: ART.KARO,
@@ -55,6 +55,7 @@ export class MauMau extends React.Component {
                 ]
             },
         };
+
     }
 
     componentDidMount() {
@@ -71,23 +72,23 @@ export class MauMau extends React.Component {
         }))
     }
 
-    karteGewaehlt(position) {
+    karteGewaehlt = (position) => {
         // TODO send picked card to server
         var karte = this.state.spieler.karten[position];
 
         this.state.spieler.karten.splice(position, 1);
         this.setState({
-                          kartenstapel: {
-                              aktuellSichtbareKarte: karte
-                          }
-                      })
+            kartenstapel: {
+                aktuellSichtbareKarte: karte
+            }
+        })
     }
 
     render() {
         console.log('render');
         return (
             <div className={"maumau"}>
-                <Gegner gegner={this.state.gegner}/>
+                <Gegner gegner={this.state.gegner} />
                 <KartenStapel
                     kartenanzahl={this.state.kartenstapel.kartenanzahl}
                     aktuellSichtbareKarte={this.state.kartenstapel.aktuellSichtbareKarte}
