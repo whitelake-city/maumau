@@ -1,6 +1,6 @@
 import React from 'react';
 import {SpielerKarten} from "./komponenten/spielerkarten/spieler";
-import {Mitspieler} from "./komponenten/gegnerkarten/mitspieler";
+import {Mitspieler} from "./komponenten/mitspielerkarten/mitspieler";
 import {KartenStapel} from "./komponenten/kartenstapel/kartenstapel";
 import {ART, WERT} from "./konstanten";
 
