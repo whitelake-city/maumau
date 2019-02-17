@@ -321,8 +321,9 @@ class Db {
                     .run(this.connection, (err) => {
                         if (err) {
                             this.err(err);
-                            return
+                            return;
                         }
+
                         r.table('stapel')
                             .getAll(gameId, { index: 'spielId' })
                             .update({
@@ -331,7 +332,10 @@ class Db {
                             .run(this.connection, (err) => {
                                 if (err) {
                                     this.err(err);
+                                    return;
                                 }
+
+                                this.nextPlayer(gameId, spielerId);
                             })
                     })
             });
@@ -348,12 +352,64 @@ class Db {
             })
     }
 
-    err(err) {
-        console.log(err)
+    // FIXME: each player can draw two cards before the next player is active - seems like race condition
+    nextPlayer(gameId, spielerId) {
+        r.table('spiele')
+            .filter(r.row('id').eq(gameId))
+            .map((game) => {
+                return game('spieler');
+            })
+            .run(this.connection, (err, result) => {
+                if (err) {
+                    this.err(err);
+                    return;
+                }
+
+                result.toArray(
+                    (err, result) => {
+                        if (err) {
+                            this.err(err);
+                            return;
+                        }
+
+                        let spieler = result[0];
+                        let indexVomSpieler = spieler.indexOf(spielerId);
+                        console.log('$$$$$$$$$$ ' + indexVomSpieler + '/' + spieler.length);
+
+                        let naechsterSpieler;
+                        if (indexVomSpieler === spieler.length - 1) {
+                            naechsterSpieler = spieler[0];
+                        } else {
+                            naechsterSpieler = spieler[indexVomSpieler + 1];
+                        }
+
+                        console.log('############# ' + spielerId);
+                        console.log('############# ' + naechsterSpieler);
+                        r.table('spiele')
+                            .filter(r.row('id').eq(gameId))
+                            .update(
+                                (spiel) => {
+                                    return {
+                                        'amZug': naechsterSpieler
+                                    };
+                                }
+                            )
+                            .run(this.connection,
+                                 (err) => {
+                                     if (err) {
+                                         this.err(err);
+
+                                     }
+                                 });
+
+                        console.log(spieler);
+                    }
+                )
+            });
     }
 
-    loadPlayer(playerId, callback) {
-        r.table('spieler').get(playerId).run(this.connection, (err, result) => callback(result));
+    err(err) {
+        console.log(err)
     }
 }
 
