@@ -147,7 +147,7 @@ class Db {
                             return r.table('gelegt')
                                 .insert({
                                     'spielId': spiel('generated_keys')(0),
-                                    'karten': initialCard
+                                    'karten': [initialCard]
                                 })
                                 .do(() => {
                                     return { ok: true }
@@ -178,7 +178,7 @@ class Db {
                     'gelegt': r.table('gelegt')
                         .getAll(spiel('id'), { index: 'spielId' })
                         .map((gelegt) => {
-                            return { 'wert':gelegt('karten')('wert'),'art':gelegt('karten')('art') }
+                            return { 'wert':gelegt('karten').nth(0)('wert'),'art':gelegt('karten').nth(0)('art') }
                         })
                         .coerceTo('array')
                         .nth(0),
