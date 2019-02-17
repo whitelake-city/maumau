@@ -11,10 +11,10 @@ class Deck {
             'A'
         ]
         this.symbols = [
-            'Herz',
-            'Pik',
-            'Kreuz',
-            'Karo'
+            'herz',
+            'pik',
+            'kreuz',
+            'karo'
         ]
     }
 
