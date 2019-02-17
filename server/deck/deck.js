@@ -5,10 +5,10 @@ class Deck {
             '8',
             '9',
             '10',
-            'B',
-            'D',
-            'K',
-            'A'
+            'b',
+            'd',
+            'k',
+            'a'
         ]
         this.symbols = [
             'herz',
