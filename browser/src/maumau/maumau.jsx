@@ -11,11 +11,6 @@ export class MauMau extends React.Component {
         }
     }
 
-    componentDidMount() {
-        // TODO load all necessary information and sort opponents by name lexicographically for a steady order or provide an arbitrary id
-    }
-
-
     render() {
         return (
             <div className={"maumau"}>
