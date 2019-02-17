@@ -36,6 +36,10 @@ class Db {
                 .difference(r.table('stapel').indexList())
                 .forEach(index => r.table('stapel').indexCreate(index))
                 .run(connection)
+            r(['spielId'])
+                .difference(r.table('gelegt').indexList())
+                .forEach(index => r.table('gelegt').indexCreate(index))
+                .run(connection)
             callback(connection)
         }, (err) => {
             err.log('Unable to establish a connection to db', err)
@@ -126,6 +130,8 @@ class Db {
      * create a new game
      */
     createNewGame(deck, playerId) {
+        let createdDeck = deck()
+        let initialCard = createdDeck.pop()
         return r.table('spiele')
             .insert({
                 "amZug": playerId,
@@ -136,7 +142,17 @@ class Db {
                 return r.branch(
                     spiel('inserted').ne(0),
                     r.table('stapel')
-                        .insert({ 'spielId': spiel('generated_keys')(0), karten: deck() })
+                        .insert({ 'spielId': spiel('generated_keys')(0), karten: createdDeck })
+                        .do(() => {
+                            return r.table('gelegt')
+                                .insert({
+                                    'spielId': spiel('generated_keys')(0),
+                                    'karten': initialCard
+                                })
+                                .do(() => {
+                                    return { ok: true }
+                                })
+                        })
                         .do(() => {
                             return r.table('spieler')
                                 .filter({ 'id': playerId })
@@ -159,12 +175,19 @@ class Db {
             .merge((spiel) => {
                 return {
                     'spieler': r.table('spieler').get(playerId),
+                    'gelegt': r.table('gelegt')
+                        .getAll(spiel('id'), { index: 'spielId' })
+                        .map((gelegt) => {
+                            return { 'wert':gelegt('karten')('wert'),'art':gelegt('karten')('art') }
+                        })
+                        .coerceTo('array')
+                        .nth(0),
                     'mitspieler': r.table('spieler')
                         .filter((spieler) => {
                             return spieler('spielId').eq(spiel('id')).and(spieler('id').ne(playerId))
                         })
-                        .map((spieler)=>{
-                            return spieler.merge({'karten':spieler('karten').count()})
+                        .map((spieler) => {
+                            return spieler.merge({ 'karten': spieler('karten').count() })
                         })
                         .pluck('name', 'bereit', 'karten')
                         .coerceTo('array'),
