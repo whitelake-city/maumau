@@ -16,8 +16,7 @@ export class MauMau extends React.Component {
             <div className={"maumau"}>
                 <Mitspieler mitspieler={this.props.spiel.mitspieler} />
                 <KartenStapel
-                    // aktuellSichtbareKarte={this.props.spiel.gelegt}
-                    aktuellSichtbareKarte={ { art: "pik", wert: "b"} }
+                    aktuellSichtbareKarte={this.props.spiel.gelegt}
                 />
                 <SpielerKarten
                     spieler={this.props.spiel.spieler}
