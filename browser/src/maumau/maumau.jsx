@@ -1,8 +1,8 @@
 import React from 'react';
-import { SpielerKarten } from "./komponenten/spielerkarten/spieler";
-import { Gegner } from "./komponenten/gegnerkarten/gegner";
-import { KartenStapel } from "./komponenten/kartenstapel/kartenstapel";
-import { ART, WERT } from "./konstanten";
+import {SpielerKarten} from "./komponenten/spielerkarten/spieler";
+import {Mitspieler} from "./komponenten/gegnerkarten/mitspieler";
+import {KartenStapel} from "./komponenten/kartenstapel/kartenstapel";
+import {ART, WERT} from "./konstanten";
 
 export class MauMau extends React.Component {
     constructor(props) {
@@ -82,13 +82,13 @@ export class MauMau extends React.Component {
                 aktuellSichtbareKarte: karte
             }
         })
-    }
+    };
 
     render() {
         console.log('render');
         return (
             <div className={"maumau"}>
-                <Gegner gegner={this.state.gegner} />
+                <Mitspieler gegner={this.state.gegner} />
                 <KartenStapel
                     kartenanzahl={this.state.kartenstapel.kartenanzahl}
                     aktuellSichtbareKarte={this.state.kartenstapel.aktuellSichtbareKarte}
