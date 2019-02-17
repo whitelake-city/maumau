@@ -11,18 +11,18 @@ export class MauMau extends React.Component {
             this.props.sucheSpiel(this.props.match.params.spielerId)
         }
         this.state = {
-            gegner: [
+            mitspieler: [
                 {
                     name: "Horst",
-                    kartenanzahl: 2
+                    karten: 2
                 },
                 {
                     name: "Peter",
-                    kartenanzahl: 11
+                    karten: 11
                 },
                 {
                     name: "Gertrude",
-                    kartenanzahl: 8
+                    karten: 8
                 },
             ],
             kartenstapel: {
@@ -59,9 +59,8 @@ export class MauMau extends React.Component {
     }
 
     componentDidMount() {
-        console.log('component did mount');
         // TODO load all necessary information and sort opponents by name lexicographically for a steady order or provide an arbitrary id
-        this.setState(this.state.gegner.sort((a, b) => {
+        this.setState(this.state.mitspieler.sort((a, b) => {
             if (a.name < b.name) {
                 return -1;
             }
@@ -85,10 +84,9 @@ export class MauMau extends React.Component {
     };
 
     render() {
-        console.log('render');
         return (
             <div className={"maumau"}>
-                <Mitspieler gegner={this.state.gegner} />
+                <Mitspieler mitspieler={this.state.mitspieler} />
                 <KartenStapel
                     kartenanzahl={this.state.kartenstapel.kartenanzahl}
                     aktuellSichtbareKarte={this.state.kartenstapel.aktuellSichtbareKarte}

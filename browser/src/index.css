@@ -112,7 +112,7 @@ h1 {
 
 
 /* GEGNER */
-.alleGegner {
+.alleMitspieler {
     max-height: 30%;
     width: 100%;
     display: flex;
@@ -120,7 +120,7 @@ h1 {
     padding-top: 1rem;
 }
 
-.alleGegner .gegner {
+.alleMitspieler .mitspieler {
     width: 20%;
     min-width: 330px;
     margin: 0 25px;
@@ -130,27 +130,27 @@ h1 {
 
 }
 
-.alleGegner .gegner .karten {
+.alleMitspieler .mitspieler .karten {
     display: flex;
     justify-content: center;
 }
 
-.alleGegner .gegner .name {
+.alleMitspieler .mitspieler .name {
     display: flex;
     justify-content: center;
 }
 
-.alleGegner .gegner .karten .kartenrueckseite {
+.alleMitspieler .mitspieler .karten .kartenrueckseite {
     width: 75px;
     margin: 0.25rem;
     height: 110px;
 }
 
-.alleGegner .gegner .karten.ueberlappend {
+.alleMitspieler .mitspieler .karten.ueberlappend {
     padding-left: 3.8rem;
 }
 
-.alleGegner .gegner .karten.ueberlappend .kartenrueckseite {
+.alleMitspieler .mitspieler .karten.ueberlappend .kartenrueckseite {
     position: relative;
     width: 75px;
     height: 110px;

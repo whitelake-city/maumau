@@ -4,7 +4,7 @@ import React from "react"
 export class Mitspieler extends React.Component {
     render() {
         return (
-            <div className={"alleGegner"}>
+            <div className={"alleMitspieler"}>
                 {this.props.mitspieler.map((mitspieler) =>
                     <MitspielerKarten mitspieler={mitspieler} key={mitspieler.name}/>
                 )}
