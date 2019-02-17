@@ -5,7 +5,9 @@ import {KartenVorderseite} from "../karten/kartenVorderseite";
 export class KartenStapel extends Component {
 
     zieheKarte = () => {
-       this.props.api.zieheKarte(this.props.spiel.id, this.props.spiel.spieler.id)
+        if (this.props.spiel.spieler.amZug) {
+            this.props.api.zieheKarte(this.props.spiel.id, this.props.spiel.spieler.id)
+        }
     };
 
     render() {

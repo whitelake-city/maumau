@@ -31,7 +31,7 @@ class Game {
         });
 
         this.client.on('zieheKarte', ({ spielId, spielerId }) => {
-            this.drawCard({ gameId: spielId, playerId: spielerId });
+            this.db.drawCard(spielId, spielerId);
         });
 
         this.client.on('spielStatusAktualisieren', ({ spielId, spielerId }) => {
@@ -86,10 +86,6 @@ class Game {
     playCard({ gameId, playerId, position }) {
         console.log(gameId + ' ' + playerId + ' ' + position)
         // TODO: play the card :)
-    }
-
-    drawCard({ gameId, playerId }) {
-        this.db.givePlayerCards(gameId, playerId, 1);
     }
 
     err(err, details) {

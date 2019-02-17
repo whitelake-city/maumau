@@ -4,13 +4,14 @@ class Db {
     constructor() {
         this.connection = null
     }
+
     connect(callback) {
         let dbName = 'maumau';
         let tables = ['spieler', 'spiele', 'stapel', 'gelegt'];
         r.connect({
-            host: 'localhost',
-            port: 28015,
-        }).then((connection) => {
+                      host: 'localhost',
+                      port: 28015,
+                  }).then((connection) => {
             this.connection = connection;
             r.dbList().contains(dbName)
                 .do((databaseExists) => {
@@ -21,7 +22,6 @@ class Db {
                     );
                 }).run(connection);
             connection.use(dbName);
-
 
             r(tables)
                 .difference(r.tableList())
@@ -49,12 +49,16 @@ class Db {
     createPlayer(name, callback) {
         r.table('spieler')
             .insert({
-                'name': name,
-                'bereit': false,
-                'karten': []
-            })
+                        'name': name,
+                        'bereit': false,
+                        'karten': []
+                    })
             .run(this.connection, (err, result) => {
-                if (err) { callback({ ok: false }); this.err(err); return }
+                if (err) {
+                    callback({ ok: false });
+                    this.err(err);
+                    return
+                }
                 callback({ ok: true, id: result.generated_keys[0], 'name': name })
             })
     }
@@ -70,7 +74,11 @@ class Db {
             .limit(1)
             .coerceTo('array')
             .run(this.connection, (err, spiele) => {
-                if (err) { callback({ ok: false }); this.err(err); return }
+                if (err) {
+                    callback({ ok: false });
+                    this.err(err);
+                    return
+                }
 
                 if (spiele.length > 0) {
                     this.getJoinedGame(playerId, spiele[0].id, callback)
@@ -80,7 +88,11 @@ class Db {
                         this.addPlayerToExistingGame(playerId),
                         this.createNewGame(getDeckFunction, playerId)
                     ).run(this.connection, (err, result) => {
-                        if (err) { callback({ ok: false }); this.err(err); return }
+                        if (err) {
+                            callback({ ok: false });
+                            this.err(err);
+                            return
+                        }
                         this.getJoinedGame(playerId, result.id, callback)
                     })
                 }
@@ -106,12 +118,12 @@ class Db {
     addPlayerToExistingGame(playerId) {
         return r.table('spiele')
             .filter(r.row('spieler').count().lt(4)
-                .and(
-                    r.row('gestartet').eq(false)
-                ))
+                        .and(
+                            r.row('gestartet').eq(false)
+                        ))
             .limit(1)
             .update({ 'spieler': r.row('spieler').append(playerId) },
-                { returnChanges: true }
+                    { returnChanges: true }
             ).do((spieleUpdate) => {
                 return r.branch(
                     spieleUpdate('replaced').ne(0),
@@ -126,7 +138,7 @@ class Db {
             })
     }
 
-    /** 
+    /**
      * create a new game
      */
     createNewGame(deck, playerId) {
@@ -134,10 +146,10 @@ class Db {
         let initialCard = createdDeck.pop();
         return r.table('spiele')
             .insert({
-                "amZug": playerId,
-                "gestartet": false,
-                "spieler": [playerId]
-            })
+                        "amZug": playerId,
+                        "gestartet": false,
+                        "spieler": [playerId]
+                    })
             .do((spiel) => {
                 return r.branch(
                     spiel('inserted').ne(0),
@@ -146,9 +158,9 @@ class Db {
                         .do(() => {
                             return r.table('gelegt')
                                 .insert({
-                                    'spielId': spiel('generated_keys')(0),
-                                    'karten': [initialCard]
-                                })
+                                            'spielId': spiel('generated_keys')(0),
+                                            'karten': [initialCard]
+                                        })
                                 .do(() => {
                                     return { ok: true }
                                 })
@@ -166,8 +178,8 @@ class Db {
             })
     }
 
-    /** 
-     * Returns the current game state 
+    /**
+     * Returns the current game state
      */
     getJoinedGame(playerId, gameId, callback) {
         r.table('spiele')
@@ -175,13 +187,13 @@ class Db {
             .merge((spiel) => {
                 return {
                     'spieler': r.table('spieler').get(playerId)
-                        .do((spieler)=>{
-                            return spieler.merge({'amZug': spiel('amZug').eq(playerId)})
+                        .do((spieler) => {
+                            return spieler.merge({ 'amZug': spiel('amZug').eq(playerId) })
                         }).coerceTo('object'),
                     'gelegt': r.table('gelegt')
                         .getAll(spiel('id'), { index: 'spielId' })
                         .map((gelegt) => {
-                            return { 'wert':gelegt('karten').slice(-1).nth(0)('wert'),'art':gelegt('karten').slice(-1).nth(0)('art') }
+                            return { 'wert': gelegt('karten').slice(-1).nth(0)('wert'), 'art': gelegt('karten').slice(-1).nth(0)('art') }
                         })
                         .coerceTo('array')
                         .nth(0),
@@ -197,8 +209,12 @@ class Db {
                 }
             }).without('amZug')
             .run(this.connection, (err, joinedGame) => {
-                if (err) { callback({ ok: false }); this.err(err); return }
-                console.log(joinedGame)
+                if (err) {
+                    callback({ ok: false });
+                    this.err(err);
+                    return
+                }
+                console.log(joinedGame);
                 callback({ ok: true, ...joinedGame })
             })
     }
@@ -218,14 +234,20 @@ class Db {
                 }, { nonAtomic: true, returnChanges: true }
             )
             .run(this.connection, (err, changes) => {
-                if (err) { this.err(err); return }
+                if (err) {
+                    this.err(err);
+                    return
+                }
                 r.table('stapel')
                     .getAll(changes.changes[0].new_val.spielId, { index: 'spielId' })
                     .update({
-                        'karten': r.row('karten').slice(numCards)
-                    })
+                                'karten': r.row('karten').slice(numCards)
+                            })
                     .run(this.connection, (err) => {
-                        if (err) { this.err(err); return }
+                        if (err) {
+                            this.err(err);
+                            return
+                        }
                         if (changes.unchanged === 1) {
                             callback({ ok: false })
                         } else {
@@ -240,7 +262,11 @@ class Db {
             .filter(r.row('spielId').eq(gameId))
             .changes()
             .run(this.connection, (err, cursor) => {
-                if (err) { callback({ ok: false }); this.err(err); return }
+                if (err) {
+                    callback({ ok: false });
+                    this.err(err);
+                    return
+                }
                 cursor.each((err, change) => {
                     if (change.new_val && change.new_val.bereit === true && change.old_val.bereit === false) {
                         r.branch(
@@ -254,8 +280,14 @@ class Db {
                                 ).count().gt(1),
                             false
                         ).run(this.connection, (err, result) => {
-                            if (err) { callback({ ok: false }); this.err(err); return }
-                            if (result) cursor.close();
+                            if (err) {
+                                callback({ ok: false });
+                                this.err(err);
+                                return
+                            }
+                            if (result) {
+                                cursor.close();
+                            }
                             callback({ ok: true, gestartet: result })
                         });
                         return
@@ -265,29 +297,44 @@ class Db {
             })
     }
 
-    givePlayerCards(gameId, spielerId, numberOfCards) {
-        r.table('spieler')
-            .get(spielerId)
-            .update(
-                {
-                    'karten': r.table('stapel')
-                        .getAll(gameId, { index: 'spielId' })
-                        .map((stapel) => {
-                            return stapel('karten').slice(0, numberOfCards)
-                        }).nth(0)
-                }, { nonAtomic: true }
-            )
-            .run(this.connection, (err) => {
-                if (err) { this.err(err); return }
-                r.table('stapel')
-                    .getAll(gameId, { index: 'spielId' })
-                    .update({
-                        'karten': r.row('karten').slice(numberOfCards)
-                    }, { returnChanges: true })
-                    .run(this.connection, (err) => {
-                        if (err) { this.err(err);  }
-                    })
+    drawCard(gameId, spielerId) {
+        r.table('stapel')
+            .getAll(gameId, { index: 'spielId' })
+            .map((stapel) => {
+                return stapel('karten').slice(0, 1)
             })
+            .nth(0)
+            .run(this.connection, (err, result) => {
+                if (err) {
+                    this.err(err);
+                    return
+                }
+
+                r.table('spieler')
+                    .get(spielerId)
+                    .update(
+                        {
+                            'karten': r.row('karten')
+                                .append(result[0])
+                        }, { nonAtomic: true }
+                    )
+                    .run(this.connection, (err) => {
+                        if (err) {
+                            this.err(err);
+                            return
+                        }
+                        r.table('stapel')
+                            .getAll(gameId, { index: 'spielId' })
+                            .update({
+                                        'karten': r.row('karten').slice(1)
+                                    }, { returnChanges: true })
+                            .run(this.connection, (err) => {
+                                if (err) {
+                                    this.err(err);
+                                }
+                            })
+                    })
+            });
     }
 
     startGame(gameId) {
@@ -295,10 +342,11 @@ class Db {
             .filter(r.row('id').eq(gameId))
             .update({ 'gestartet': true })
             .run(this.connection, (err) => {
-                if (err) { this.err(err);  }
+                if (err) {
+                    this.err(err);
+                }
             })
     }
-
 
     err(err) {
         console.log(err)
