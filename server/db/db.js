@@ -163,6 +163,9 @@ class Db {
                         .filter((spieler) => {
                             return spieler('spielId').eq(spiel('id')).and(spieler('id').ne(playerId))
                         })
+                        .map((spieler)=>{
+                            return spieler.merge({'karten':spieler('karten').count()})
+                        })
                         .pluck('name', 'bereit', 'karten')
                         .coerceTo('array'),
                     'amZug': r.table('spieler').get(spiel('amZug')).getField('name')
