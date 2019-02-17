@@ -22,7 +22,10 @@ class Game {
                     })
                 }
             })
-        })
+        });
+        this.client.on('spieleKarte', (karte , callback) => {
+            this.playCard({ card: karte, callback });
+        });
     }
 
     createPlayer({ name, callback }) {
@@ -32,10 +35,10 @@ class Game {
     searchGame({ playerId, callback }) {
         this.db.getOrCreateGame(this.deck.createDeck.bind(this.deck), playerId, (result) => {
             if (result.ok === true) {
-                this.subscribeToGameStarted({ playerId, gameId: result.id })
+                this.subscribeToGameStarted({ playerId, gameId: result.id });
                 callback(result)
             } else {
-                this.err(result)
+                this.err(result);
                 callback({ ok: false })
             }
         })
@@ -45,7 +48,7 @@ class Game {
         this.db.subscribeToGameChanges(gameId, (state) => {
             if (state.ok === true) {
                 if (state.gestartet === true) {
-                    this.db.startGame(gameId)
+                    this.db.startGame(gameId);
                     this.db.getJoinedGame(playerId, gameId, (game) => {
                         this.client.emit(`spielGestartet${gameId}`, game)
                     })
@@ -56,6 +59,11 @@ class Game {
                 }
             }
         })
+    }
+
+    playCard({ card, callback }) {
+        // TODO: play the card :)
+        console.log(card);
     }
 
     err(err, details) {

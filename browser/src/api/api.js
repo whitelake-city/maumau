@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import openSocket from 'socket.io-client';
-import { Button, Col, Container, Input, InputGroup, Row } from 'reactstrap';
+import {Button, Col, Container, Input, InputGroup, Row} from 'reactstrap';
 
 class ApiComponent extends Component {
     state = {
@@ -33,7 +33,7 @@ class ApiComponent extends Component {
         this.props.api.warteAufAlleSpielerBereit(ergebnis, () => {
             console.log('Geht los');
         })
-    }
+    };
 
 
 
@@ -107,7 +107,7 @@ class Api {
     subscribedTo = {
         warteAufSpielStart: false,
         warteAufSpielerBereit: false
-    }
+    };
     connect() {
         this.socket = openSocket('http://localhost:8000')
     }
@@ -120,7 +120,7 @@ class Api {
                 rueckruf(ergebnis)
             }
         )
-    }
+    };
 
     sucheSpiel = (spielerId, rueckruf) => {
         this.socket.emit(
@@ -128,37 +128,45 @@ class Api {
             { spielerId },
             rueckruf
         )
-    }
+    };
 
     spielerIstBereit = (spielerId) => {
         this.socket.emit('spielerIstBereit', { spielerId })
-    }
+    };
 
-    warteAufSpielStart = (spielId, callback) => {
+    warteAufSpielStart = (spielId, rueckruf) => {
         if (this.subscribedTo.warteAufSpielStart === false) {
             this.socket.once(
                 `spielGestartet${spielId}`,
                 (result) => {
-                    this.subscribedTo.warteAufSpielStart = false
-                    callback(result)
+                    this.subscribedTo.warteAufSpielStart = false;
+                    rueckruf(result)
                 }
-            )
+            );
             this.subscribedTo.warteAufSpielStart = true
         }
 
-    }
+    };
 
-    warteAufSpielerBereit = (spielId, callback) => {
+    warteAufSpielerBereit = (spielId, rueckruf) => {
         if (this.subscribedTo.warteAufSpielerBereit === false) {
             this.socket.once(
                 `spielerBereit${spielId}`,
                 (result)=>{
-                    this.subscribedTo.warteAufSpielerBereit = false
-                    callback(result)
+                    this.subscribedTo.warteAufSpielerBereit = false;
+                    rueckruf(result)
                 }
-            )
+            );
             this.subscribedTo.warteAufSpielerBereit = true
         }
+    };
+
+    spieleKarte = (karte, rueckruf) => {
+        this.socket.emit(
+            'spieleKarte',
+            karte,
+            rueckruf
+        )
     }
 }
 

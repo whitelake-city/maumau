@@ -60,9 +60,8 @@ class App extends Component {
     };
 
     karteGewaehlt = (position) => {
-        // TODO send played card to server
         let gespielteKarte = this.state.spiel.spieler.karten[position];
-        console.log(gespielteKarte);
+        this.state.api.spieleKarte(gespielteKarte, this.aktualisiereSpiel);
 
         this.state.spiel.spieler.karten.splice(position, 1); // TODO remove me. not necessary upon subscription
         this.setState({ gelegt: gespielteKarte })
