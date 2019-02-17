@@ -2,6 +2,7 @@ import React from 'react';
 import {SpielerKarten} from "./komponenten/spielerkarten/spieler";
 import {Mitspieler} from "./komponenten/mitspielerkarten/mitspieler";
 import {KartenStapel} from "./komponenten/kartenstapel/kartenstapel";
+import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 
 export class MauMau extends React.Component {
     constructor(props) {
@@ -11,10 +12,14 @@ export class MauMau extends React.Component {
         }
     }
 
+    geheZumStart = () => {
+        return this.props.history.push(`/`);
+    };
+
     render() {
         return (
             <div className={"maumau"}>
-                <Mitspieler mitspieler={this.props.spiel.mitspieler} />
+                <Mitspieler mitspieler={this.props.spiel.mitspieler}/>
                 <KartenStapel
                     aktuellSichtbareKarte={this.props.spiel.gelegt}
                 />
@@ -22,6 +27,24 @@ export class MauMau extends React.Component {
                     spieler={this.props.spiel.spieler}
                     beiClick={this.props.karteGewaehlt}
                 />
+
+                <Modal isOpen={this.props.spiel.spieler.karten.length === 0} className={'gewonnen'}>
+                    <ModalHeader>Gewonnen! 😁</ModalHeader>
+                    <ModalBody>
+                        Gratulation {this.props.spiel.spieler.name}, du hast gewonnen! Spiele weiter um noch mehr Siege zu erlangen.
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.geheZumStart}>Neues Spiel</Button>
+                    </ModalFooter>
+                </Modal>
+
+                <Modal isOpen={this.props.spiel.mitspieler.some((mitspieler) => mitspieler.karten === 0)} className={'verloren'}>
+                    <ModalHeader>Verloren 😞</ModalHeader>
+                    <ModalBody>Du hast leider verloren. Spiele noch ein Spiel, vielleicht hast du das nächste mal ja mehr Glück.</ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={this.geheZumStart}>Neues Spiel</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         )
     }
