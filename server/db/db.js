@@ -178,6 +178,7 @@ class Db {
     }
 
     playerIsReady(id, callback) {
+        let numCards = 6
         r.table('spieler')
             .get(id)
             .update(
@@ -185,7 +186,7 @@ class Db {
                     'karten': r.table('stapel')
                         .getAll(r.row('spielId'), { index: 'spielId' })
                         .map((stapel) => {
-                            return stapel('karten').slice(0, 5)
+                            return stapel('karten').slice(0, numCards)
                         }).nth(0),
                     'bereit': true
                 }, { nonAtomic: true, returnChanges: true }
@@ -195,7 +196,7 @@ class Db {
                 r.table('stapel')
                     .getAll(changes.changes[0].new_val.spielId, { index: 'spielId' })
                     .update({
-                        'karten': r.row('karten').slice(5)
+                        'karten': r.row('karten').slice(numCards)
                     })
                     .run(this.connection, (err) => {
                         if (err) { this.err(err); return }
