@@ -190,16 +190,22 @@ h1 {
     width: 100%;
 }
 
-.spieler .karten {
+.spieler .karten,
+.spieler .karten-deaktiviert {
     display: inline-flex;
     justify-content: center;
     width: 100%;
 }
 
-.spieler .karten .kartenvorderseite {
+.spieler .karten .kartenvorderseite,
+.spieler .karten-deaktiviert .kartenvorderseite {
     width: 100px;
     height: 143px;
     margin: 0.35rem;
+}
+
+.spieler .karten-deaktiviert .kartenvorderseite {
+    opacity: 0.7;
 }
 
 .spieler .karten .kartenvorderseite:hover {
