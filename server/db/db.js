@@ -174,7 +174,10 @@ class Db {
             .get(gameId)
             .merge((spiel) => {
                 return {
-                    'spieler': r.table('spieler').get(playerId),
+                    'spieler': r.table('spieler').get(playerId)
+                        .do((spieler)=>{
+                            return spieler.merge({'amZug': spiel('amZug').eq(playerId)})
+                        }).coerceTo('object'),
                     'gelegt': r.table('gelegt')
                         .getAll(spiel('id'), { index: 'spielId' })
                         .map((gelegt) => {
@@ -190,12 +193,12 @@ class Db {
                             return spieler.merge({ 'karten': spieler('karten').count() })
                         })
                         .pluck('name', 'bereit', 'karten')
-                        .coerceTo('array'),
-                    'amZug': r.table('spieler').get(spiel('amZug')).getField('name')
+                        .coerceTo('array')
                 }
-            })
+            }).without('amZug')
             .run(this.connection, (err, joinedGame) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
+                console.log(joinedGame)
                 callback({ ok: true, ...joinedGame })
             })
     }
