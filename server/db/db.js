@@ -178,7 +178,7 @@ class Db {
                     'gelegt': r.table('gelegt')
                         .getAll(spiel('id'), { index: 'spielId' })
                         .map((gelegt) => {
-                            return { 'wert':gelegt('karten').nth(0)('wert'),'art':gelegt('karten').nth(0)('art') }
+                            return { 'wert':gelegt('karten').slice(-1).nth(0)('wert'),'art':gelegt('karten').slice(-1).nth(0)('art') }
                         })
                         .coerceTo('array')
                         .nth(0),
