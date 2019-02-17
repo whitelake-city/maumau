@@ -3,7 +3,7 @@ import {KartenVorderseite} from "../karten/kartenVorderseite";
 
 export class SpielerKarten extends Component {
     render() {
-        let kartenKlasse = this.props.spieler.amZug?"karten":"karten-deaktiviert"
+        let kartenKlasse = this.props.spiel.spieler.amZug ? "karten" : "karten-deaktiviert";
         return (
             <div className={"spieler"}>
                 <h1 className={"name"}>{this.props.spiel.spieler.name}</h1>
@@ -16,7 +16,10 @@ export class SpielerKarten extends Component {
                                     position={idx}
                                     api={this.props.api}
                                     spielId={this.props.spiel.id}
-                                    karte={aktuelleKarte}/>
+                                    spielerId={this.props.spiel.spieler.id}
+                                    karte={aktuelleKarte}
+                                    amZug={this.props.spiel.spieler.amZug}
+                                />
                             )
                         )
                     }

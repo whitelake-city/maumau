@@ -7,7 +7,9 @@ export class KartenVorderseite extends Component {
 
     beiClick = (event) => {
         event.preventDefault();
-        this.props.api.spieleKarte(this.props.spielId, this.props.position);
+        if (this.props.amZug) {
+            this.props.api.spieleKarte(this.props.spielId, this.props.spielerId, this.props.position);
+        }
     };
 
     render() {

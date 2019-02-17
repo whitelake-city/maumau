@@ -160,11 +160,12 @@ class Api {
         }
     };
 
-    spieleKarte = (spielId, position) => {
+    spieleKarte = (spielId, spielerId, position) => {
         this.socket.emit(
             'spieleKarte',
             {
                 spielId: spielId,
+                spielerId: spielerId,
                 position: position
             }
         )
