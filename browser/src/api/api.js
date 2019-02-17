@@ -104,7 +104,8 @@ class Api {
     socket = null;
     subscribedTo = {
         warteAufSpielStart: false,
-        warteAufSpielerBereit: false
+        warteAufSpielerBereit: false,
+        warteAufSpielStatus: false,
     };
 
     connect() {
@@ -160,16 +161,48 @@ class Api {
         }
     };
 
+    warteAufSpielStatus = (spielId,spielerId, rueckruf) => {
+        if (this.subscribedTo.warteAufSpielStatus === false) {
+
+            this.socket.emit(
+                'spielStatusAktualisieren',
+                {
+                    spielId: spielId,
+                    spielerId: spielerId,
+                }
+            );
+
+            this.socket.on(
+                `spielStatusAktualisieren${spielId}`,
+                (result) => {
+                    rueckruf(result)
+                },
+            );
+            this.subscribedTo.warteAufSpielStatus = true
+        }
+    };
+
     spieleKarte = (spielId, spielerId, position) => {
         this.socket.emit(
             'spieleKarte',
             {
                 spielId: spielId,
                 spielerId: spielerId,
-                position: position
+                position: position,
             }
         )
-    }
+    };
+
+    zieheKarte = (spielId, spielerId) => {
+        console.log('draw card');
+        this.socket.emit(
+            'zieheKarte',
+            {
+                spielId: spielId,
+                spielerId: spielerId,
+            }
+        )
+    };
 }
 
 export {ApiComponent, Api}

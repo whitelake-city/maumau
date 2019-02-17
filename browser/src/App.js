@@ -96,6 +96,7 @@ class App extends Component {
                                     spiel={this.state.spiel}
                                     api={this.state.api}
                                     sucheSpiel={this.sucheSpiel}
+                                    aktualisiereSpiel={this.aktualisiereSpiel}
                                 />
                         }
                     />

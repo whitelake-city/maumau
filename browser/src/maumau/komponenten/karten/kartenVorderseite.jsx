@@ -1,10 +1,6 @@
 import React, {Component} from "react";
 
 export class KartenVorderseite extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     beiClick = (event) => {
         event.preventDefault();
         if (this.props.amZug) {

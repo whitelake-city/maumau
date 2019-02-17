@@ -7,19 +7,21 @@ import Button from "reactstrap/es/Button";
 export class Lobby extends Component {
     constructor(props) {
         super(props);
+
         if (!props.spiel.id) {
-            this.props.sucheSpiel(this.props.match.params.spielerId)
+            this.props.sucheSpiel(this.props.match.params.spielerId);
         } else {
-            this.props.api.warteAufSpielStart(this.props.spiel.id, (spiel)=>{
+            this.props.api.warteAufSpielStart(this.props.spiel.id, (spiel) => {
                 this.props.starteSpiel(spiel);
-                this.props.history.push(`/mau-mau/${spiel.spieler.id}`)
+                this.props.history.push(`/mau-mau/${spiel.spieler.id}`);
             });
-            this.props.api.warteAufSpielerBereit(this.props.spiel.id, this.props.aktualisiereSpiel)
+
+            this.props.api.warteAufSpielerBereit(this.props.spiel.id, this.props.aktualisiereSpiel);
         }
     }
 
     spielerIstBereit = () => {
-        this.props.api.spielerIstBereit(this.props.spiel.spieler.id,this.props.aktualisiereSpiel)
+        this.props.api.spielerIstBereit(this.props.spiel.spieler.id, this.props.aktualisiereSpiel);
     };
 
     render() {
@@ -53,7 +55,8 @@ export class Lobby extends Component {
                     }
                 )}
                 <Row className={"aktionen"}>
-                    <Col sm={{ size: 'auto', offset: 5 }}><Button disabled={this.props.spiel.spieler.bereit} onClick={this.spielerIstBereit}>Spiel starten</Button></Col>
+                    <Col sm={{ size: 'auto', offset: 5 }}><Button disabled={this.props.spiel.spieler.bereit}
+                                                                  onClick={this.spielerIstBereit}>Spiel starten</Button></Col>
                 </Row>
             </Container>
         );
