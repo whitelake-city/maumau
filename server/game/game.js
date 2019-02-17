@@ -1,10 +1,10 @@
-const deck = require('../deck/deck');
+const Deck = require('../deck/deck');
 
 class Game {
     constructor(db, client) {
         this.db = db;
         this.client = client;
-        this.deck = new deck()
+        this.deck = new Deck()
     }
 
     start() {
@@ -30,7 +30,7 @@ class Game {
     }
 
     searchGame({ playerId, callback }) {
-        this.db.getOrCreateGame(this.deck.createDeck, playerId, (result) => {
+        this.db.getOrCreateGame(this.deck.createDeck.bind(this.deck), playerId, (result) => {
             if (result.ok === true) {
                 this.subscribeToGameStarted({ playerId, gameId: result.id })
                 callback(result)
@@ -44,7 +44,7 @@ class Game {
     subscribeToGameStarted({ playerId, gameId }) {
         this.db.subscribeToGameChanges(gameId, (state) => {
             if (state.ok === true) {
-                if(state.gestartet === true) {
+                if (state.gestartet === true) {
                     this.db.startGame(gameId)
                     this.db.getJoinedGame(playerId, gameId, (game) => {
                         this.client.emit(`spielGestartet${gameId}`, game)

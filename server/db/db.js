@@ -6,7 +6,7 @@ class Db {
     }
     connect(callback) {
         let dbName = 'maumau';
-        let tables = ['spieler', 'spiele', 'spieler_karten', 'stapel'];
+        let tables = ['spieler', 'spiele', 'stapel', 'gelegt'];
         r.connect({
             host: 'localhost',
             port: 28015,
@@ -24,12 +24,18 @@ class Db {
 
 
             r(tables)
-                .difference(r.db(dbName).tableList())
-                .forEach(table => r.db(dbName).tableCreate(table))
+                .difference(r.tableList())
+                .forEach(table => r.tableCreate(table))
                 .run(connection);
 
-            r.db(dbName).table('spieler').indexCreate("spielId")
-
+            r(['spielId'])
+                .difference(r.table('spieler').indexList())
+                .forEach(index => r.table('spieler').indexCreate(index))
+                .run(connection)
+            r(['spielId'])
+                .difference(r.table('stapel').indexList())
+                .forEach(index => r.table('stapel').indexCreate(index))
+                .run(connection)
             callback(connection)
         }, (err) => {
             err.log('Unable to establish a connection to db', err)
@@ -40,7 +46,8 @@ class Db {
         r.table('spieler')
             .insert({
                 'name': name,
-                'bereit': false
+                'bereit': false,
+                'karten': []
             })
             .run(this.connection, (err, result) => {
                 if (err) { callback({ ok: false }); this.err(err); return }
@@ -129,7 +136,7 @@ class Db {
                 return r.branch(
                     spiel('inserted').ne(0),
                     r.table('stapel')
-                        .insert({ 'spiel': spiel('generated_keys')(0), ...deck })
+                        .insert({ 'spielId': spiel('generated_keys')(0), karten: deck() })
                         .do(() => {
                             return r.table('spieler')
                                 .filter({ 'id': playerId })
@@ -156,7 +163,7 @@ class Db {
                         .filter((spieler) => {
                             return spieler('spielId').eq(spiel('id')).and(spieler('id').ne(playerId))
                         })
-                        .pluck('name', 'bereit')
+                        .pluck('name', 'bereit', 'karten')
                         .coerceTo('array'),
                     'amZug': r.table('spieler').get(spiel('amZug')).getField('name')
                 }
@@ -169,15 +176,32 @@ class Db {
 
     playerIsReady(id, callback) {
         r.table('spieler')
-            .filter(r.row('id').eq(id))
-            .update({ 'bereit': true }, { returnChanges: true })
+            .get(id)
+            .update(
+                {
+                    'karten': r.table('stapel')
+                        .getAll(r.row('spielId'), { index: 'spielId' })
+                        .map((stapel) => {
+                            return stapel('karten').slice(0, 5)
+                        }).nth(0),
+                    'bereit': true
+                }, { nonAtomic: true, returnChanges: true }
+            )
             .run(this.connection, (err, changes) => {
                 if (err) { this.err(err); return }
-                if (changes.unchanged === 1) {
-                    callback({ ok: false })
-                } else {
-                    callback({ ok: true, spielId: changes.changes[0].new_val.spielId })
-                }
+                r.table('stapel')
+                    .getAll(changes.changes[0].new_val.spielId, { index: 'spielId' })
+                    .update({
+                        'karten': r.row('karten').slice(5)
+                    })
+                    .run(this.connection, (err) => {
+                        if (err) { this.err(err); return }
+                        if (changes.unchanged === 1) {
+                            callback({ ok: false })
+                        } else {
+                            callback({ ok: true, spielId: changes.changes[0].new_val.spielId })
+                        }
+                    })
             })
     }
 
@@ -201,36 +225,39 @@ class Db {
                             false
                         ).run(this.connection, (err, result) => {
                             if (err) { callback({ ok: false }); this.err(err); return }
-                            if(result) cursor.close()
-                            callback({ok:true,gestartet:result})
+                            if (result) cursor.close()
+                            callback({ ok: true, gestartet: result })
                         })
+                        return
                     }
+                    return callback({ ok: true, gestartet: false })
                 })
             })
+    }
 
-
-        // r.table('spieler')
-        //     .filter(r.row('spielId').eq(gameId))
-        //     .changes()
-        //     .run(this.connection, (err, cursor) => {
-        //         if (err) { callback({ ok: false }); this.err(err); return }
-        //         cursor.each((err, change) => {
-        //             if (change.new_val.bereit === true && change.old_val.bereit === false) {
-        // r.table('spiele')
-        //     .filter((spiel) => {
-        //         return spiel('id').eq(gameId).and(spiel('spieler').count().gt(1))
-        //     })
-        //     .pluck('id')
-        //     .coerceTo('array')
-        //     .run(this.connection, (err, id) => {
-        //         if (err) { callback({ ok: false }); this.err(err); return }
-        //         console.log(id)
-        //         callback({ ok: true })
-        //         cursor.close();
-        //     })
-        //         }
-        //     })
-        // })
+    givePlayerCards(gameId, spielerId, numberOfCards) {
+        r.table('spieler')
+            .get(spielerId)
+            .update(
+                {
+                    'karten': r.table('stapel')
+                        .getAll(gameId, { index: 'spielId' })
+                        .map((stapel) => {
+                            return stapel('karten').slice(0, numberOfCards)
+                        }).nth(0)
+                }, { nonAtomic: true }
+            )
+            .run(this.connection, (err) => {
+                if (err) { this.err(err); return }
+                r.table('stapel')
+                    .getAll(gameId, { index: 'spielId' })
+                    .update({
+                        'karten': r.row('karten').slice(numberOfCards)
+                    }, { returnChanges: true })
+                    .run(this.connection, (err) => {
+                        if (err) { this.err(err); return }
+                    })
+            })
     }
 
     startGame(gameId) {

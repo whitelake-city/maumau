@@ -9,19 +9,19 @@ class Deck {
             'D',
             'K',
             'A'
-        ],
-            this.symbols = [
-                'Herz',
-                'Pik',
-                'Kreuz',
-                'Karo'
-            ]
+        ]
+        this.symbols = [
+            'Herz',
+            'Pik',
+            'Kreuz',
+            'Karo'
+        ]
     }
 
     createDeck() {
         let result = []
         this.values
-            .forEach((val) => {
+            .forEach((val, i) => {
                 this.symbols.forEach(((symbol) => {
                     result.push({
                         wert: val,
@@ -29,7 +29,7 @@ class Deck {
                     })
                 }))
             })
-            
+
         return this.shuffle(result);
 
     }
