@@ -23,8 +23,8 @@ class Game {
                 }
             })
         });
-        this.client.on('spieleKarte', (karte , callback) => {
-            this.playCard({ card: karte, callback });
+        this.client.on('spieleKarte', ({ spielId, position }) => {
+            this.playCard({ gameId: spielId, position: position });
         });
     }
 
@@ -61,9 +61,9 @@ class Game {
         })
     }
 
-    playCard({ card, callback }) {
+    playCard({ gameId, position }) {
+        console.log(gameId + ' ' + position)
         // TODO: play the card :)
-        console.log(card);
     }
 
     err(err, details) {

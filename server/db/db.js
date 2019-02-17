@@ -31,15 +31,15 @@ class Db {
             r(['spielId'])
                 .difference(r.table('spieler').indexList())
                 .forEach(index => r.table('spieler').indexCreate(index))
-                .run(connection)
+                .run(connection);
             r(['spielId'])
                 .difference(r.table('stapel').indexList())
                 .forEach(index => r.table('stapel').indexCreate(index))
-                .run(connection)
+                .run(connection);
             r(['spielId'])
                 .difference(r.table('gelegt').indexList())
                 .forEach(index => r.table('gelegt').indexCreate(index))
-                .run(connection)
+                .run(connection);
             callback(connection)
         }, (err) => {
             err.log('Unable to establish a connection to db', err)
@@ -130,8 +130,8 @@ class Db {
      * create a new game
      */
     createNewGame(deck, playerId) {
-        let createdDeck = deck()
-        let initialCard = createdDeck.pop()
+        let createdDeck = deck();
+        let initialCard = createdDeck.pop();
         return r.table('spiele')
             .insert({
                 "amZug": playerId,
@@ -204,7 +204,7 @@ class Db {
     }
 
     playerIsReady(id, callback) {
-        let numCards = 6
+        let numCards = 6;
         r.table('spieler')
             .get(id)
             .update(
@@ -255,9 +255,9 @@ class Db {
                             false
                         ).run(this.connection, (err, result) => {
                             if (err) { callback({ ok: false }); this.err(err); return }
-                            if (result) cursor.close()
+                            if (result) cursor.close();
                             callback({ ok: true, gestartet: result })
-                        })
+                        });
                         return
                     }
                     return callback({ ok: true, gestartet: false })
@@ -285,7 +285,7 @@ class Db {
                         'karten': r.row('karten').slice(numberOfCards)
                     }, { returnChanges: true })
                     .run(this.connection, (err) => {
-                        if (err) { this.err(err); return }
+                        if (err) { this.err(err);  }
                     })
             })
     }
@@ -295,9 +295,10 @@ class Db {
             .filter(r.row('id').eq(gameId))
             .update({ 'gestartet': true })
             .run(this.connection, (err) => {
-                if (err) { this.err(err); return }
+                if (err) { this.err(err);  }
             })
     }
+
 
     err(err) {
         console.log(err)

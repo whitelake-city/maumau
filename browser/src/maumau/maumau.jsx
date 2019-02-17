@@ -16,16 +16,18 @@ export class MauMau extends React.Component {
         return this.props.history.push(`/`);
     };
 
+
+
     render() {
         return (
-            <div className={"maumau"}>
+            <div className={'maumau'}>
                 <Mitspieler mitspieler={this.props.spiel.mitspieler}/>
                 <KartenStapel
                     aktuellSichtbareKarte={this.props.spiel.gelegt}
                 />
                 <SpielerKarten
-                    spieler={this.props.spiel.spieler}
-                    beiClick={this.props.karteGewaehlt}
+                    spiel={this.props.spiel}
+                    api={this.props.api}
                 />
 
                 <Modal isOpen={this.props.spiel.spieler.karten.length === 0} className={'gewonnen'}>

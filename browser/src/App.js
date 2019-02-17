@@ -59,13 +59,6 @@ class App extends Component {
         this.setState({ spiel: spiel })
     };
 
-    karteGewaehlt = (position) => {
-        let gespielteKarte = this.state.spiel.spieler.karten[position];
-        this.state.api.spieleKarte(gespielteKarte, this.aktualisiereSpiel);
-
-        this.state.spiel.spieler.karten.splice(position, 1); // TODO remove me. not necessary upon subscription
-        this.setState({ gelegt: gespielteKarte })
-    };
 
     render() {
         return (
@@ -101,8 +94,8 @@ class App extends Component {
                                 <MauMau
                                     {...props}
                                     spiel={this.state.spiel}
+                                    api={this.state.api}
                                     sucheSpiel={this.sucheSpiel}
-                                    karteGewaehlt={this.karteGewaehlt}
                                 />
                         }
                     />

@@ -25,8 +25,8 @@ class ApiComponent extends Component {
 
     setzeSpielernamen = (ereignis) => {
         this.setState({
-            spielername: ereignis.target.value
-        })
+                          spielername: ereignis.target.value
+                      })
     };
 
     spielGestartet = (ergebnis) => {
@@ -34,8 +34,6 @@ class ApiComponent extends Component {
             console.log('Geht los');
         })
     };
-
-
 
     render() {
         return (
@@ -47,7 +45,7 @@ class ApiComponent extends Component {
                     <Col>
                         <form onSubmit={this.erstelleSpieler}>
                             <InputGroup>
-                                <Input placeholder="Spielername" onChange={this.setzeSpielernamen} required />
+                                <Input placeholder="Spielername" onChange={this.setzeSpielernamen} required/>
                             </InputGroup>
                             <InputGroup>
                                 <Button color="success" disabled={this.state.spielername.length < 1}>Spieler erstellen</Button>
@@ -62,7 +60,7 @@ class ApiComponent extends Component {
                     <Col>
                         <ul>
                             {this.state.spieler.map(spieler => (
-                                <Spieler api={this.props.api} spieler={spieler} key={spieler.id} spielGestartet={this.spielGestartet} />
+                                <Spieler api={this.props.api} spieler={spieler} key={spieler.id} spielGestartet={this.spielGestartet}/>
                             ))}
                         </ul>
                     </Col>
@@ -108,6 +106,7 @@ class Api {
         warteAufSpielStart: false,
         warteAufSpielerBereit: false
     };
+
     connect() {
         this.socket = openSocket('http://localhost:8000')
     }
@@ -152,7 +151,7 @@ class Api {
         if (this.subscribedTo.warteAufSpielerBereit === false) {
             this.socket.once(
                 `spielerBereit${spielId}`,
-                (result)=>{
+                (result) => {
                     this.subscribedTo.warteAufSpielerBereit = false;
                     rueckruf(result)
                 }
@@ -161,13 +160,15 @@ class Api {
         }
     };
 
-    spieleKarte = (karte, rueckruf) => {
+    spieleKarte = (spielId, position) => {
         this.socket.emit(
             'spieleKarte',
-            karte,
-            rueckruf
+            {
+                spielId: spielId,
+                position: position
+            }
         )
     }
 }
 
-export { ApiComponent, Api }
+export {ApiComponent, Api}
