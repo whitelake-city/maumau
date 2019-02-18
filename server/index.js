@@ -1,4 +1,4 @@
-const io = require('socket.io')()
+const io = require('socket.io')(8000)
 const Db = require('./db/db')
 const Game = require('./game/game')
 
@@ -11,11 +11,8 @@ class Server {
         this.db = new Db();
         this.game = new Game()
         this.db.connect(()=>{
-            const port = 8000
-            io.listen(port)
-            console.log('listening on port ', port)
             io.on('connection', (client) => {
-                let game = new Game(this.db,client)
+                let game = new Game(this.db,client,io)
                 game.start()
             })
         })

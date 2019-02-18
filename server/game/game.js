@@ -1,8 +1,10 @@
-const Deck = require('../deck/deck');
+const Deck = require('../deck/deck')
+const io = require('socket.io')()
 
 class Game {
-    constructor(db, client) {
+    constructor(db, client,io) {
         this.db = db;
+        this.io = io
         this.client = client;
         this.deck = new Deck()
     }
@@ -31,11 +33,13 @@ class Game {
         });
 
         this.client.on('zieheKarte', ({ spielId, spielerId }) => {
-            this.db.drawCard(spielId, spielerId, 1);
+            this.db.drawCard(spielId, spielerId, 1, () => {
+                this.nextPlayer(spielId, spielerId)
+            });
         });
 
         this.client.on('spielStatusAktualisieren', ({ spielId, spielerId }) => {
-            this.subscribeToGameStatusUpdates({ gameId: spielId, playerId: spielerId })
+            // this.subscribeToGameStatusUpdates({ gameId: spielId, playerId: spielerId })
         })
     }
 
@@ -72,16 +76,27 @@ class Game {
         })
     }
 
-    subscribeToGameStatusUpdates({ playerId, gameId }) {
-        console.log(`subscribed ${playerId} to game ${gameId}`);
-        this.db.subscribeToGameChanges(gameId, (state) => {
-            if (state.ok === true) {
-                this.db.getJoinedGame(playerId, gameId, (game) => {
-                    this.client.emit(`spielStatusAktualisieren${gameId}`, game);
-                });
-            }
+    nextPlayer(spielId, spielerId) {
+        this.db.nextPlayer(spielId, spielerId, () => {
+            this.db.getJoinedGame(spielerId, spielId, (game) => {
+                console.log(spielId)
+                this.io.sockets.emit(`spielStatusAktualisieren${spielId}`, game)
+                io.sockets.emit(`spielStatusAktualisieren${spielId}`, game);
+                this.io.emit(`spielStatusAktualisieren${spielId}`)
+            });
         });
     }
+
+    // subscribeToGameStatusUpdates({ playerId, gameId }) {
+    //     console.log(`subscribed ${playerId} to game ${gameId}`);
+    //     this.db.subscribeToGameChanges(gameId, (state) => {
+    //         if (state.ok === true) {
+    //             this.db.getJoinedGame(playerId, gameId, (game) => {
+    //                 this.client.emit(`spielStatusAktualisieren${gameId}`, game);
+    //             });
+    //         }
+    //     });
+    // }
 
     playCard({ gameId, playerId, position }) {
         console.log(gameId + ' ' + playerId + ' ' + position)

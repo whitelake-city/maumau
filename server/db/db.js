@@ -9,9 +9,9 @@ class Db {
         let dbName = 'maumau';
         let tables = ['spieler', 'spiele', 'stapel', 'gelegt'];
         r.connect({
-                      host: 'localhost',
-                      port: 28015,
-                  }).then((connection) => {
+            host: 'localhost',
+            port: 28015,
+        }).then((connection) => {
             this.connection = connection;
             r.dbList().contains(dbName)
                 .do((databaseExists) => {
@@ -49,10 +49,10 @@ class Db {
     createPlayer(name, callback) {
         r.table('spieler')
             .insert({
-                        'name': name,
-                        'bereit': false,
-                        'karten': []
-                    })
+                'name': name,
+                'bereit': false,
+                'karten': []
+            })
             .run(this.connection, (err, result) => {
                 if (err) {
                     callback({ ok: false });
@@ -118,12 +118,12 @@ class Db {
     addPlayerToExistingGame(playerId) {
         return r.table('spiele')
             .filter(r.row('spieler').count().lt(4)
-                        .and(
-                            r.row('gestartet').eq(false)
-                        ))
+                .and(
+                    r.row('gestartet').eq(false)
+                ))
             .limit(1)
             .update({ 'spieler': r.row('spieler').append(playerId) },
-                    { returnChanges: true }
+                { returnChanges: true }
             ).do((spieleUpdate) => {
                 return r.branch(
                     spieleUpdate('replaced').ne(0),
@@ -146,10 +146,10 @@ class Db {
         let initialCard = createdDeck.pop();
         return r.table('spiele')
             .insert({
-                        "amZug": playerId,
-                        "gestartet": false,
-                        "spieler": [playerId]
-                    })
+                "amZug": playerId,
+                "gestartet": false,
+                "spieler": [playerId]
+            })
             .do((spiel) => {
                 return r.branch(
                     spiel('inserted').ne(0),
@@ -158,9 +158,9 @@ class Db {
                         .do(() => {
                             return r.table('gelegt')
                                 .insert({
-                                            'spielId': spiel('generated_keys')(0),
-                                            'karten': [initialCard]
-                                        })
+                                    'spielId': spiel('generated_keys')(0),
+                                    'karten': [initialCard]
+                                })
                                 .do(() => {
                                     return { ok: true }
                                 })
@@ -241,8 +241,8 @@ class Db {
                 r.table('stapel')
                     .getAll(changes.changes[0].new_val.spielId, { index: 'spielId' })
                     .update({
-                                'karten': r.row('karten').slice(numCards)
-                            })
+                        'karten': r.row('karten').slice(numCards)
+                    })
                     .run(this.connection, (err) => {
                         if (err) {
                             this.err(err);
@@ -297,9 +297,9 @@ class Db {
             })
     }
 
-    drawCard(gameId, spielerId, numberOfCards) {
+    drawCard(gameId, playerId, numberOfCards, callback) {
         r.table('spieler')
-            .get(spielerId)
+            .get(playerId)
             .update(
                 {
                     'karten': r.row('karten')
@@ -323,9 +323,8 @@ class Db {
                         if (err) {
                             this.err(err);
                         }
+                        callback(gameId, playerId)
                     });
-
-                this.nextPlayer(gameId, spielerId);
             })
     }
 
@@ -341,7 +340,7 @@ class Db {
     }
 
     // FIXME: each player can draw two cards before the next player is active - seems like race condition
-    nextPlayer(gameId, spielerId) {
+    nextPlayer(gameId, playerId, callback) {
         r.table('spiele')
             .filter(r.row('id').eq(gameId))
             .map((game) => {
@@ -353,16 +352,14 @@ class Db {
                     return;
                 }
 
-                result.toArray(
-                    (err, result) => {
+                result.toArray((err, result) => {
                         if (err) {
                             this.err(err);
                             return;
                         }
 
                         let spieler = result[0];
-                        let indexVomSpieler = spieler.indexOf(spielerId);
-                        console.log('$$$$$$$$$$ ' + indexVomSpieler + '/' + spieler.length);
+                        let indexVomSpieler = spieler.indexOf(playerId);
 
                         let naechsterSpieler;
                         if (indexVomSpieler === spieler.length - 1) {
@@ -370,9 +367,6 @@ class Db {
                         } else {
                             naechsterSpieler = spieler[indexVomSpieler + 1];
                         }
-
-                        console.log('############# ' + spielerId);
-                        console.log('############# ' + naechsterSpieler);
                         r.table('spiele')
                             .filter(r.row('id').eq(gameId))
                             .update(
@@ -382,15 +376,12 @@ class Db {
                                     };
                                 }
                             )
-                            .run(this.connection,
-                                 (err) => {
-                                     if (err) {
-                                         this.err(err);
-
-                                     }
-                                 });
-
-                        console.log(spieler);
+                            .run(this.connection, (err) => {
+                                if (err) {
+                                    this.err(err);
+                                }
+                                callback(playerId,gameId)
+                            });
                     }
                 )
             });
