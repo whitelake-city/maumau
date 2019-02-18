@@ -297,48 +297,36 @@ class Db {
             })
     }
 
-    drawCard(gameId, spielerId) {
-        r.table('stapel')
-            .getAll(gameId, { index: 'spielId' })
-            .map((stapel) => {
-                return stapel('karten').slice(0, 1)
-            })
-            .nth(0)
-            .run(this.connection, (err, result) => {
+    drawCard(gameId, spielerId, numberOfCards) {
+        r.table('spieler')
+            .get(spielerId)
+            .update(
+                {
+                    'karten': r.row('karten')
+                        .union(
+                            r.table('stapel')
+                                .getAll(gameId, { index: 'spielId' })
+                                .map((stapel) => {
+                                    return stapel('karten').slice(0, numberOfCards)
+                                }).nth(0))
+                }, { nonAtomic: true }
+            )
+            .run(this.connection, (err) => {
                 if (err) {
                     this.err(err);
                     return
                 }
-
-                r.table('spieler')
-                    .get(spielerId)
-                    .update(
-                        {
-                            'karten': r.row('karten')
-                                .append(result[0])
-                        }, { nonAtomic: true }
-                    )
+                r.table('stapel')
+                    .getAll(gameId, { index: 'spielId' })
+                    .update({ 'karten': r.row('karten').slice(numberOfCards) }, { returnChanges: true })
                     .run(this.connection, (err) => {
                         if (err) {
                             this.err(err);
-                            return;
                         }
+                    });
 
-                        r.table('stapel')
-                            .getAll(gameId, { index: 'spielId' })
-                            .update({
-                                        'karten': r.row('karten').slice(1)
-                                    }, { returnChanges: true })
-                            .run(this.connection, (err) => {
-                                if (err) {
-                                    this.err(err);
-                                    return;
-                                }
-
-                                this.nextPlayer(gameId, spielerId);
-                            })
-                    })
-            });
+                this.nextPlayer(gameId, spielerId);
+            })
     }
 
     startGame(gameId) {

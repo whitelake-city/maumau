@@ -31,7 +31,7 @@ class Game {
         });
 
         this.client.on('zieheKarte', ({ spielId, spielerId }) => {
-            this.db.drawCard(spielId, spielerId);
+            this.db.drawCard(spielId, spielerId, 1);
         });
 
         this.client.on('spielStatusAktualisieren', ({ spielId, spielerId }) => {
