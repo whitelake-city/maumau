@@ -214,7 +214,6 @@ class Db {
                     this.err(err);
                     return
                 }
-                console.log(joinedGame);
                 callback({ ok: true, ...joinedGame })
             })
     }
@@ -339,6 +338,16 @@ class Db {
             })
     }
 
+    getAllPlayers(gameId,callback) {
+        r.table('spieler')
+            .getAll(gameId, { index: 'spielId' })
+            .coerceTo('array')
+            .run(this.connection, (err, spieler) => {
+                if (err) { this.err(err); return; }
+                callback(spieler)
+            })
+    }
+
     // FIXME: each player can draw two cards before the next player is active - seems like race condition
     nextPlayer(gameId, playerId, callback) {
         r.table('spiele')
@@ -353,36 +362,36 @@ class Db {
                 }
 
                 result.toArray((err, result) => {
-                        if (err) {
-                            this.err(err);
-                            return;
-                        }
-
-                        let spieler = result[0];
-                        let indexVomSpieler = spieler.indexOf(playerId);
-
-                        let naechsterSpieler;
-                        if (indexVomSpieler === spieler.length - 1) {
-                            naechsterSpieler = spieler[0];
-                        } else {
-                            naechsterSpieler = spieler[indexVomSpieler + 1];
-                        }
-                        r.table('spiele')
-                            .filter(r.row('id').eq(gameId))
-                            .update(
-                                (spiel) => {
-                                    return {
-                                        'amZug': naechsterSpieler
-                                    };
-                                }
-                            )
-                            .run(this.connection, (err) => {
-                                if (err) {
-                                    this.err(err);
-                                }
-                                callback(playerId,gameId)
-                            });
+                    if (err) {
+                        this.err(err);
+                        return;
                     }
+
+                    let spieler = result[0];
+                    let indexVomSpieler = spieler.indexOf(playerId);
+
+                    let naechsterSpieler;
+                    if (indexVomSpieler === spieler.length - 1) {
+                        naechsterSpieler = spieler[0];
+                    } else {
+                        naechsterSpieler = spieler[indexVomSpieler + 1];
+                    }
+                    r.table('spiele')
+                        .filter(r.row('id').eq(gameId))
+                        .update(
+                            (spiel) => {
+                                return {
+                                    'amZug': naechsterSpieler
+                                };
+                            }
+                        )
+                        .run(this.connection, (err) => {
+                            if (err) {
+                                this.err(err);
+                            }
+                            callback(playerId, gameId)
+                        });
+                }
                 )
             });
     }

@@ -78,12 +78,19 @@ class Game {
 
     nextPlayer(spielId, spielerId) {
         this.db.nextPlayer(spielId, spielerId, () => {
-            this.db.getJoinedGame(spielerId, spielId, (game) => {
-                console.log(spielId)
-                this.io.sockets.emit(`spielStatusAktualisieren${spielId}`, game)
-                io.sockets.emit(`spielStatusAktualisieren${spielId}`, game);
-                this.io.emit(`spielStatusAktualisieren${spielId}`)
-            });
+            this.db.getAllPlayers(spielId,(allPlayers)=>{
+                console.log()
+                allPlayers.forEach(spieler => {
+                    this.db.getJoinedGame(spieler.id, spielId, (game) => {
+                        this.io.sockets.emit(`spielStatusAktualisieren${spieler.id}`, game)
+                        // this.client.emit(`spielStatusAktualisieren${spielId}`, game)
+                        // this.client.broadcast.emit(`spielStatusAktualisieren${spielId}`, game)
+                        // io.sockets.emit(`spielStatusAktualisieren${spielId}`, game);
+                        // io.emit(`spielStatusAktualisieren${spielId}`, game)
+                    });
+                });
+            })
+            
         });
     }
 

@@ -173,9 +173,8 @@ class Api {
             );
 
             this.socket.on(
-                `spielStatusAktualisieren${spielId}`,
+                `spielStatusAktualisieren${spielerId}`,
                 (result) => {
-                    console.log('trootel')
                     rueckruf(result)
                 },
             );
