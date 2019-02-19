@@ -197,6 +197,14 @@ h1 {
     width: 100%;
 }
 
+.spieler .karten .kartenvorderseite.ungueltig {
+    box-shadow: 0 0 0.25rem 0.25rem #6a2222;
+}
+
+.spieler .karten .kartenvorderseite.ungueltig:hover {
+    box-shadow: 0 0 0.25rem 0.25rem #9a2222;
+}
+
 .spieler .karten .kartenvorderseite,
 .spieler .karten-deaktiviert .kartenvorderseite {
     width: 100px;

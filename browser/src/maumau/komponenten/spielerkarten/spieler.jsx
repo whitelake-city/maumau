@@ -1,7 +1,15 @@
-import React, {Component} from "react";
-import {KartenVorderseite} from "../karten/kartenVorderseite";
+import React, { Component } from "react";
+import { KartenVorderseite } from "../karten/kartenVorderseite";
 
 export class SpielerKarten extends Component {
+    istGueltigerZug = (kartenPosition) => {
+        let spielerKarte = this.props.spiel.spieler.karten[kartenPosition];
+        let gelegt = this.props.spiel.gelegt
+        if(spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.art) {
+            return true
+        }
+        return false
+    }
     render() {
         return (
             <div className={"spieler"}>
@@ -18,6 +26,7 @@ export class SpielerKarten extends Component {
                                     spielerId={this.props.spiel.spieler.id}
                                     karte={aktuelleKarte}
                                     amZug={this.props.spiel.spieler.amZug}
+                                    istGueltigerZug={this.istGueltigerZug}
                                 />
                             )
                         )
