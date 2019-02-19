@@ -163,15 +163,6 @@ class Api {
 
     warteAufSpielStatus = (spielId,spielerId, rueckruf) => {
         if (this.subscribedTo.warteAufSpielStatus === false) {
-
-            this.socket.emit(
-                'spielStatusAktualisieren',
-                {
-                    spielId: spielId,
-                    spielerId: spielerId,
-                }
-            );
-
             this.socket.on(
                 `spielStatusAktualisieren${spielerId}`,
                 (result) => {
