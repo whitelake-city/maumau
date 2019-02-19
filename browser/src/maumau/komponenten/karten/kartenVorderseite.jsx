@@ -11,15 +11,13 @@ export class KartenVorderseite extends Component {
             this.props.api.spieleKarte(this.props.spielId, this.props.spielerId, this.props.position);
         } else {
             this.setState({ zugUngueltig: true })
-            setTimeout(
-                function () {
-                    this.setState({ zugUngueltig: false });
-                }
-                    .bind(this),
-                3000
-            );
+            setTimeout(this.nachAblaufDerZeit, 3000)
         }
     };
+
+    nachAblaufDerZeit = () => {
+        this.setState({ zugUngueltig: false })
+    }
 
     render() {
         let className = "kartenvorderseite"

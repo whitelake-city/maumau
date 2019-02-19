@@ -5,7 +5,7 @@ export class SpielerKarten extends Component {
     istGueltigerZug = (kartenPosition) => {
         let spielerKarte = this.props.spiel.spieler.karten[kartenPosition];
         let gelegt = this.props.spiel.gelegt
-        if(spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.art) {
+        if(spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.wert) {
             return true
         }
         return false
