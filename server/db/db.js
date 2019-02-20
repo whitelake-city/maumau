@@ -256,7 +256,7 @@ class Db {
             })
     }
 
-    subscribeToGameChanges(gameId, callback) {
+    subscribeToGameStarted(gameId, callback) {
         r.table('spieler')
             .filter(r.row('spielId').eq(gameId))
             .changes()
@@ -296,6 +296,71 @@ class Db {
             })
     }
 
+    subscribeToDeckEmpty(gameId, callback) {
+        r.table('stapel')
+            .getAll(gameId, { index: 'spielId' })
+            .filter(row => {
+                return row('karten').count().eq(0)
+            })
+            .changes({ squash: true, includeInitial: false })
+            .run(this.connection, (err, cursor) => {
+                if (err) { this.err(err); return }
+
+                cursor.each(function (err, row) {
+                    if (err) throw err;
+                    callback()
+                    return false;
+                }, ()=>{
+                    
+                });
+            })
+    }
+
+    refillDeck(gameId, shuffleCards, callback) {
+        r.table('stapel')
+            .getAll(gameId, { index: 'spielId' })
+            .map((row) => {
+                return row('karten')
+                    .union(
+                        r.table('gelegt')
+                            .getAll(gameId, { index: 'spielId' })
+                            .map((gelegt) => {
+                                return gelegt('karten')
+                            }).nth(0))
+            })
+            .run(this.connection, (err, allCards) => {
+                if (err) { this.err(err); return }
+
+                allCards.toArray((err,row)=>{
+                    if (err) { this.err(err); return }
+                    console.log(row)
+                })
+
+                // console.log(allCards)
+                // if (allCards[0].length === 1) return;
+                // console.log(allCards[0])
+                // let shuffledCards = shuffleCards(allCards[0])
+                // let played = shuffledCards.pop()
+
+                // r.table('gelegt')
+                //     .getAll(gameId, { index: 'spielId' })
+                //     .update({
+                //         'karten': [played]
+                //     })
+                //     .do(() => {
+                //         return r.table('stapel')
+                //             .getAll(gameId, { index: 'spielId' })
+                //             .update({
+                //                 'karten': shuffledCards
+                //             })
+                //     }).run(this.connection, (err) => {
+                //         if (err) { this.err(err); return }
+                //         callback()
+                //     })
+
+            })
+    }
+
     drawCard(gameId, playerId, numberOfCards, callback) {
         r.table('spieler')
             .get(playerId)
@@ -319,9 +384,7 @@ class Db {
                     .getAll(gameId, { index: 'spielId' })
                     .update({ 'karten': r.row('karten').slice(numberOfCards) })
                     .run(this.connection, (err) => {
-                        if (err) {
-                            this.err(err);
-                        }
+                        if (err) { this.err(err); return }
                         callback(gameId, playerId)
                     });
             })
@@ -381,7 +444,7 @@ class Db {
             })
     }
 
-    nextPlayer(gameId, playerId, nextPlayerCount,  callback) {
+    nextPlayer(gameId, playerId, nextPlayerCount, callback) {
         r.table('spiele')
             .filter(r.row('id').eq(gameId))
             .map((game) => {

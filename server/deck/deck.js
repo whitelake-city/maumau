@@ -3,12 +3,7 @@ class Deck {
         this.values = [
             '7',
             '8',
-            '9',
-            '10',
-            'b',
-            'd',
-            'k',
-            'a'
+            '9'
         ]
         this.symbols = [
             'herz',

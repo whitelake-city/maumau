@@ -2,7 +2,7 @@ const Deck = require('../deck/deck');
 const io = require('socket.io')();
 
 class Game {
-    constructor(db, client,io) {
+    constructor(db, client, io) {
         this.db = db;
         this.io = io;
         this.client = client;
@@ -64,10 +64,11 @@ class Game {
     }
 
     subscribeToGameStarted({ playerId, gameId }) {
-        this.db.subscribeToGameChanges(gameId, (state) => {
+        this.db.subscribeToGameStarted(gameId, (state) => {
             if (state.ok === true) {
                 if (state.gestartet === true) {
                     this.db.startGame(gameId);
+                    this.ensureDeckIsAlwaysFull(playerId, gameId)
                     this.db.getJoinedGame(playerId, gameId, (game) => {
                         this.client.emit(`spielGestartet${gameId}`, game);
                     })
@@ -82,15 +83,25 @@ class Game {
 
     nextPlayer(spielId, spielerId, anzahlSpieler) {
         this.db.nextPlayer(spielId, spielerId, anzahlSpieler, () => {
-            this.db.getAllPlayers(spielId,(allPlayers)=>{
+            this.db.getAllPlayers(spielId, (allPlayers) => {
                 allPlayers.forEach(spieler => {
                     this.db.getJoinedGame(spieler.id, spielId, (game) => {
                         this.io.sockets.emit(`spielStatusAktualisieren${spieler.id}`, game)
                     });
                 });
             })
-            
+
         });
+    }
+
+    ensureDeckIsAlwaysFull(playerId, gameId) {
+        this.db.subscribeToDeckEmpty(gameId, () => {
+            this.db.refillDeck(gameId, this.deck.shuffle.bind(this.deck), () => {
+                this.db.getJoinedGame(playerId, gameId, (game) => {
+                    this.io.sockets.emit(`spielStatusAktualisieren${playerId}`, game)
+                })
+            })
+        })
     }
 
     err(err, details) {
