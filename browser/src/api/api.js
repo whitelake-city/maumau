@@ -173,9 +173,20 @@ class Api {
         }
     };
 
-    spieleKarte = (spielId, spielerId, position) => {
+    spieleNormaleKarte = (spielId, spielerId, position) => {
         this.socket.emit(
-            'spieleKarte',
+            'spieleNormaleKarte',
+            {
+                spielId: spielId,
+                spielerId: spielerId,
+                position: position,
+            }
+        )
+    };
+
+    spieleAss = (spielId, spielerId, position) => {
+        this.socket.emit(
+            'spieleAss',
             {
                 spielId: spielId,
                 spielerId: spielerId,

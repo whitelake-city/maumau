@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import { KartenVorderseite } from "../karten/kartenVorderseite";
+import React, {Component} from "react";
+import {KartenVorderseite} from "../karten/kartenVorderseite";
 
 export class SpielerKarten extends Component {
+
     istGueltigerZug = (kartenPosition) => {
         let spielerKarte = this.props.spiel.spieler.karten[kartenPosition];
-        let gelegt = this.props.spiel.gelegt
-        if(spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.wert) {
-            return true
-        }
-        return false
-    }
+        let gelegt = this.props.spiel.gelegt;
+
+        return spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.wert;
+    };
+
     render() {
         return (
             <div className={"spieler"}>

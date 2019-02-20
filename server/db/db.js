@@ -381,7 +381,7 @@ class Db {
             })
     }
 
-    nextPlayer(gameId, playerId, callback) {
+    nextPlayer(gameId, playerId, nextPlayerCount,  callback) {
         r.table('spiele')
             .filter(r.row('id').eq(gameId))
             .map((game) => {
@@ -400,14 +400,12 @@ class Db {
                     }
 
                     let spieler = result[0];
-                    let indexVomSpieler = spieler.indexOf(playerId);
 
-                    let naechsterSpieler;
-                    if (indexVomSpieler === spieler.length - 1) {
-                        naechsterSpieler = spieler[0];
-                    } else {
-                        naechsterSpieler = spieler[indexVomSpieler + 1];
-                    }
+                    let indexVomSpieler = spieler.indexOf(playerId);
+                    let indexNaechsterSpieler = (indexVomSpieler + nextPlayerCount) % spieler.length;
+
+                    let naechsterSpieler = spieler[indexNaechsterSpieler];
+
                     r.table('spiele')
                         .filter(r.row('id').eq(gameId))
                         .update(

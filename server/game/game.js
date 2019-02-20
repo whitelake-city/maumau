@@ -28,15 +28,21 @@ class Game {
             })
         });
 
-        this.client.on('spieleKarte', ({ spielId, spielerId, position }) => {
+        this.client.on('spieleNormaleKarte', ({ spielId, spielerId, position }) => {
             this.db.playCard(spielId, spielerId, position, () => {
-                this.nextPlayer(spielId, spielerId)
+                this.nextPlayer(spielId, spielerId, 1)
+            });
+        });
+
+        this.client.on('spieleAss', ({ spielId, spielerId, position }) => {
+            this.db.playCard(spielId, spielerId, position, () => {
+                this.nextPlayer(spielId, spielerId, 2)
             });
         });
 
         this.client.on('zieheKarte', ({ spielId, spielerId }) => {
             this.db.drawCard(spielId, spielerId, 1, () => {
-                this.nextPlayer(spielId, spielerId)
+                this.nextPlayer(spielId, spielerId, 1)
             });
         });
     }
@@ -74,10 +80,9 @@ class Game {
         })
     }
 
-    nextPlayer(spielId, spielerId) {
-        this.db.nextPlayer(spielId, spielerId, () => {
+    nextPlayer(spielId, spielerId, anzahlSpieler) {
+        this.db.nextPlayer(spielId, spielerId, anzahlSpieler, () => {
             this.db.getAllPlayers(spielId,(allPlayers)=>{
-                console.log();
                 allPlayers.forEach(spieler => {
                     this.db.getJoinedGame(spieler.id, spielId, (game) => {
                         this.io.sockets.emit(`spielStatusAktualisieren${spieler.id}`, game)
