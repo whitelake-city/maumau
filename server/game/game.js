@@ -48,7 +48,9 @@ class Game {
                                      : 2 * sevensCount;
 
                 this.db.drawCard(spielId, spielerId, drawCardsCount, () => {
-                    this.nextPlayer(spielId, spielerId, 1)
+                    this.db.refillDeckIfEmpty(spielId, this.deck.shuffle.bind(this.deck), () => {
+                        this.nextPlayer(spielId, spielerId, 1)
+                    })
                 });
             });
         });
@@ -75,7 +77,7 @@ class Game {
             if (state.ok === true) {
                 if (state.gestartet === true) {
                     this.db.startGame(gameId);
-                    this.ensureDeckIsAlwaysFull(playerId, gameId)
+                    // this.ensureDeckIsAlwaysFull(playerId, gameId)
                     this.db.getJoinedGame(playerId, gameId, (game) => {
                         this.client.emit(`spielGestartet${gameId}`, game);
                     })
@@ -103,16 +105,15 @@ class Game {
             });
         })
     }
-
-    ensureDeckIsAlwaysFull(playerId, gameId) {
-        this.db.subscribeToDeckEmpty(gameId, () => {
-            this.db.refillDeck(gameId, this.deck.shuffle.bind(this.deck), () => {
-                this.db.getJoinedGame(playerId, gameId, (game) => {
-                    this.io.sockets.emit(`spielStatusAktualisieren${playerId}`, game)
-                })
-            })
-        })
-    }
+    // ensureDeckIsAlwaysFull(playerId, gameId) {
+    //     this.db.subscribeToDeckEmpty(gameId, () => {
+    //         this.db.refillDeck(gameId, this.deck.shuffle.bind(this.deck), () => {
+    //             this.db.getJoinedGame(playerId, gameId, (game) => {
+    //                 this.io.sockets.emit(`spielStatusAktualisieren${playerId}`, game)
+    //             })
+    //         })
+    //     })
+    // }
 
     err(err, details) {
         console.log(err, details)
