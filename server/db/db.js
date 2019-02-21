@@ -193,7 +193,11 @@ class Db {
                     'gelegt': r.table('gelegt')
                         .getAll(spiel('id'), { index: 'spielId' })
                         .map((gelegt) => {
-                            return { 'wert': gelegt('karten').slice(-1).nth(0)('wert'), 'art': gelegt('karten').slice(-1).nth(0)('art') }
+                            return {
+                                'wert': gelegt('karten').slice(-1).nth(0)('wert'),
+                                'art': gelegt('karten').slice(-1).nth(0)('art'),
+                                'spezialEffektAktiv': gelegt('karten').slice(-1).nth(0)('spezialEffektAktiv')
+                            }
                         })
                         .coerceTo('array')
                         .nth(0),
@@ -205,7 +209,7 @@ class Db {
                             return spieler.merge({ 'karten': spieler('karten').count() })
                         })
                         .pluck('name', 'bereit', 'karten')
-                        .coerceTo('array')
+                        .coerceTo('array'),
                 }
             }).without('amZug')
             .run(this.connection, (err, joinedGame) => {
@@ -376,17 +380,34 @@ class Db {
                 }, { nonAtomic: true }
             )
             .run(this.connection, (err) => {
-                if (err) {
-                    this.err(err);
-                    return
-                }
-                r.table('stapel')
-                    .getAll(gameId, { index: 'spielId' })
-                    .update({ 'karten': r.row('karten').slice(numberOfCards) })
+                if (err) { this.err(err); return }
+
+                r.table('gelegt')
+                    .filter(r.row('spielId').eq(gameId))
+                    .update({
+                                'karten': r.row('karten')
+                                    .map((karte) => {
+                                        return r.branch(// 1. Which element(s) in the array you want to update
+                                                        karte('spezialEffektAktiv').eq(true),
+                                                        // 2. The change you want to perform on the matching elements
+                                                        karte.merge({ spezialEffektAktiv: false }),
+                                                        karte)
+                                    })
+                            })
                     .run(this.connection, (err) => {
                         if (err) { this.err(err); return }
-                        callback(gameId, playerId)
+
+                        r.table('stapel')
+                            .getAll(gameId, { index: 'spielId' })
+                            .update({ 'karten': r.row('karten').slice(numberOfCards) })
+                            .run(this.connection, (err) => {
+                                if (err) { this.err(err); return }
+
+                                callback(gameId, playerId)
+                            });
                     });
+
+
             })
     }
 
@@ -484,10 +505,27 @@ class Db {
                             }
                             callback(playerId, gameId)
                         });
-                }
-                )
+                });
             });
     }
+
+    getCountOfSevensOnPlayedStack(gameId, playerId, callback) {
+        r.table('gelegt')
+            .filter(r.row('spielId').eq(gameId))
+            .map((gelegt) => {
+                return gelegt('karten').slice(-4);
+            })
+            .nth(0)
+            .count((gelegt) => {
+                return gelegt('wert').eq('7').and(gelegt('spezialEffektAktiv').eq(true))
+            })
+            .run(this.connection, (err, count) => {
+                if (err) { this.err(err); return; }
+
+                callback(gameId, playerId, count)
+            });
+    }
+
 
     err(err) {
         console.log(err)

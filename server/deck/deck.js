@@ -3,7 +3,12 @@ class Deck {
         this.values = [
             '7',
             '8',
-            '9'
+            '9',
+            '10',
+            'b',
+            'd',
+            'k',
+            'a'
         ]
         this.symbols = [
             'herz',
@@ -20,7 +25,8 @@ class Deck {
                 this.symbols.forEach(((symbol) => {
                     result.push({
                         wert: val,
-                        art: symbol
+                        art: symbol,
+                        spezialEffektAktiv: true
                     })
                 }))
             })

@@ -12,7 +12,7 @@ export class KartenVorderseite extends Component {
             if (this.istAss()) {
                 this.props.api.spieleAss(this.props.spielId, this.props.spielerId, this.props.position)
             } else {
-                this.props.api.spieleNormaleKarte(this.props.spielId, this.props.spielerId, this.props.position);
+                this.props.api.spieleKarte(this.props.spielId, this.props.spielerId, this.props.position);
             }
         } else {
             this.setState({ zugUngueltig: true });

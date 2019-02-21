@@ -7,7 +7,8 @@ export class SpielerKarten extends Component {
         let spielerKarte = this.props.spiel.spieler.karten[kartenPosition];
         let gelegt = this.props.spiel.gelegt;
 
-        return spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.wert;
+        return ((spielerKarte.art === gelegt.art || spielerKarte.wert === gelegt.wert) && !(gelegt.wert === '7' && gelegt.spezialEffektAktiv))
+               || (gelegt.wert === '7' && spielerKarte.wert === '7');
     };
 
     render() {

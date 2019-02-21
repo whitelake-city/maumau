@@ -28,7 +28,7 @@ class Game {
             })
         });
 
-        this.client.on('spieleNormaleKarte', ({ spielId, spielerId, position }) => {
+        this.client.on('spieleKarte', ({ spielId, spielerId, position }) => {
             this.db.playCard(spielId, spielerId, position, () => {
                 this.nextPlayer(spielId, spielerId, 1)
             });
@@ -41,8 +41,15 @@ class Game {
         });
 
         this.client.on('zieheKarte', ({ spielId, spielerId }) => {
-            this.db.drawCard(spielId, spielerId, 1, () => {
-                this.nextPlayer(spielId, spielerId, 1)
+            this.db.getCountOfSevensOnPlayedStack(spielId, spielerId, (spielId, spielerId, sevensCount) => {
+                console.log("$$$$$$$$ number of sevens on stack " + sevensCount);
+                let drawCardsCount = sevensCount === 0
+                                     ? 1
+                                     : 2 * sevensCount;
+
+                this.db.drawCard(spielId, spielerId, drawCardsCount, () => {
+                    this.nextPlayer(spielId, spielerId, 1)
+                });
             });
         });
     }
@@ -83,15 +90,18 @@ class Game {
 
     nextPlayer(spielId, spielerId, anzahlSpieler) {
         this.db.nextPlayer(spielId, spielerId, anzahlSpieler, () => {
-            this.db.getAllPlayers(spielId, (allPlayers) => {
-                allPlayers.forEach(spieler => {
-                    this.db.getJoinedGame(spieler.id, spielId, (game) => {
-                        this.io.sockets.emit(`spielStatusAktualisieren${spieler.id}`, game)
-                    });
-                });
-            })
-
+            this.sendUpdateToAllPlayers(spielId);
         });
+    }
+
+    sendUpdateToAllPlayers(spielId) {
+        this.db.getAllPlayers(spielId, (allPlayers) => {
+            allPlayers.forEach(spieler => {
+                this.db.getJoinedGame(spieler.id, spielId, (game) => {
+                    this.io.sockets.emit(`spielStatusAktualisieren${spieler.id}`, game)
+                });
+            });
+        })
     }
 
     ensureDeckIsAlwaysFull(playerId, gameId) {
