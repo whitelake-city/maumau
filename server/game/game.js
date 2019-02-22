@@ -42,7 +42,6 @@ class Game {
 
         this.client.on('zieheKarte', ({ spielId, spielerId }) => {
             this.db.getCountOfSevensOnPlayedStack(spielId, spielerId, (spielId, spielerId, sevensCount) => {
-                console.log("$$$$$$$$ number of sevens on stack " + sevensCount);
                 let drawCardsCount = sevensCount === 0
                                      ? 1
                                      : 2 * sevensCount;
