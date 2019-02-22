@@ -165,11 +165,20 @@ h1 {
     justify-content: center;
 }
 
-.kartenstapel .kartenvorderseite, .kartenstapel .kartenrueckseite {
-    width: 16%;
-    margin: 0.5rem;
+.kartenstapel .stapel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+.kartenstapel .stapel img {
+    flex-grow:1
+} 
+
+
+.kartenstapel .kartenvorderseite  {
+    height: 82%;
+}
 
 /* SPIELERKARTEN */
 .spieler {

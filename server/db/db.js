@@ -186,6 +186,11 @@ class Db {
             .get(gameId)
             .merge((spiel) => {
                 return {
+                    'stapel': r.table('stapel')
+                        .getAll(gameId, { index: 'spielId' })
+                        .map(row => {
+                            return row('karten')
+                        }).nth(0).count(),
                     'spieler': r.table('spieler').get(playerId)
                         .do((spieler) => {
                             return spieler.merge({ 'amZug': spiel('amZug').eq(playerId) })
@@ -300,26 +305,6 @@ class Db {
             })
     }
 
-    // subscribeToDeckEmpty(gameId, callback) {
-    //     r.table('stapel')
-    //         .getAll(gameId, { index: 'spielId' })
-    //         .filter(row => {
-    //             return row('karten').count().eq(0)
-    //         })
-    //         .changes({ squash: true, includeInitial: false })
-    //         .run(this.connection, (err, cursor) => {
-    //             if (err) { this.err(err); return }
-
-    //             cursor.each(function (err, row) {
-    //                 if (err) { this.err(err); return }
-    //                 callback()
-    //                 console.log(gameId)
-    //                 return;
-    //             }, () => {
-
-    //             });
-    //         })
-    // }
 
     refillDeckIfEmpty(gameId, shuffleCards, callback) {
         r.branch(
@@ -382,15 +367,15 @@ class Db {
                 r.table('gelegt')
                     .filter(r.row('spielId').eq(gameId))
                     .update({
-                                'karten': r.row('karten')
-                                    .map((karte) => {
-                                        return r.branch(// 1. Which element(s) in the array you want to update
-                                                        karte('spezialEffektAktiv').eq(true),
-                                                        // 2. The change you want to perform on the matching elements
-                                                        karte.merge({ spezialEffektAktiv: false }),
-                                                        karte)
-                                    })
+                        'karten': r.row('karten')
+                            .map((karte) => {
+                                return r.branch(// 1. Which element(s) in the array you want to update
+                                    karte('spezialEffektAktiv').eq(true),
+                                    // 2. The change you want to perform on the matching elements
+                                    karte.merge({ spezialEffektAktiv: false }),
+                                    karte)
                             })
+                    })
                     .run(this.connection, (err) => {
                         if (err) { this.err(err); return }
 

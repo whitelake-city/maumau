@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 
 export class KartenVorderseite extends Component {
     state = {
@@ -34,11 +34,13 @@ export class KartenVorderseite extends Component {
             className += " ungueltig"
         }
         return (
-            <img src={"/karten/" + this.props.karte.art + "/" + this.props.karte.wert + ".svg"}
-                className={className}
-                onClick={this.beiClick}
-                alt={this.props.karte.art + " " + this.props.karte.wert}
-            />
+            <div>
+                <img src={"/karten/" + this.props.karte.art + "/" + this.props.karte.wert + ".svg"}
+                    className={className}
+                    onClick={this.beiClick}
+                    alt={this.props.karte.art + " " + this.props.karte.wert}
+                />
+            </div>
         )
     }
 }

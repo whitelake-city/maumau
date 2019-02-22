@@ -13,7 +13,8 @@ export class KartenStapel extends Component {
     render() {
         return (
             <div className={"kartenstapel"}>
-                <KartenRueckseite beiClick={this.zieheKarte}/>
+                <KartenRueckseite beiClick={this.zieheKarte} stapelGroesse={this.props.spiel.stapel} />
+                {/* <span className={"stapelanzahl"}>{this.props.spiel.stapel}</span>  */}
                 <KartenVorderseite karte={this.props.spiel.gelegt}/>
             </div>
         );
