@@ -36,4 +36,4 @@ npm start
 
 ## Client
 
-To start the client got to the folder `browser` and run `npm install` followed by `npm start`. consecutive starts don't require to run install again. 
+To start the client go to the folder `browser` and run `npm install` followed by `npm start`. consecutive starts don't require to run install again. 
