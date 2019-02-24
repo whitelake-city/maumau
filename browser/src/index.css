@@ -1,0 +1,231 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+body {
+    background-color: #008b34;
+}
+
+body, #root {
+    position: absolute;
+    background-color: #008b34;
+}
+
+body, #root, .router, .maumau {
+    height: 100%;
+    width: 100%;
+}
+
+h1 {
+    font-family: 'Special Elite', 'Gloria Hallelujah', Tahoma, Verdana !important;
+}
+
+.maumau {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* WELCOME */
+.welcome {
+    margin: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+}
+
+.welcome img {
+    width: 100%;
+}
+
+.welcome .titel {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    font-size: 5rem;
+    font-family: 'Special Elite', 'Gloria Hallelujah', Tahoma, Verdana;
+    font-weight: bold;
+    transform: translate(-50%, -30%) rotate(-35deg);
+    color: #ffffff;
+    text-shadow: 0 0 0.8rem #000, 0 0 0.8rem #000;
+}
+
+.welcome .spielerdaten {
+    margin-top: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 300px;
+    border: 3px solid #2a2a2a;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    background-color: #52cc70;
+}
+
+.welcome .spielerdaten .input-group {
+    justify-content: center;
+    padding: 10px;
+}
+
+.name {
+    font-size: 2rem;
+    font-family: 'Special Elite', 'Gloria Hallelujah', Tahoma, Verdana;
+}
+
+/* LOBBY */
+.lobby-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px !important;
+    padding: 30px !important;
+    border: 3px solid #2a2a2a;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    background-color: #52cc70;
+}
+
+.lobby-wrapper .aktionen {
+    padding-top: 15px;
+}
+
+
+/* GEGNER */
+.alleMitspieler {
+    max-height: 30%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+.alleMitspieler .mitspieler {
+    width: 20%;
+    min-width: 330px;
+    margin: 0 25px;
+    background-color: #52cc70;
+    border: 3px solid #2a2a2a;
+    border-radius: 15px;
+
+}
+
+.alleMitspieler .mitspieler .karten {
+    display: flex;
+    justify-content: center;
+}
+
+.alleMitspieler .mitspieler .name {
+    display: flex;
+    justify-content: center;
+}
+
+.alleMitspieler .mitspieler .karten .kartenrueckseite {
+    width: 75px;
+    margin: 0.25rem;
+    height: 110px;
+}
+
+.alleMitspieler .mitspieler .karten.ueberlappend {
+    padding-left: 3.8rem;
+}
+
+.alleMitspieler .mitspieler .karten.ueberlappend .kartenrueckseite {
+    position: relative;
+    width: 75px;
+    height: 110px;
+    margin: 0.25rem 0.25rem 0.25rem -3.5rem;
+}
+
+
+/* KARTENSTAPEL */
+.kartenstapel {
+    max-height: 30%;
+    display: flex;
+    justify-content: center;
+}
+
+.kartenstapel .stapel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.kartenstapel .stapel img {
+    flex-grow:1
+} 
+
+
+.kartenstapel .kartenvorderseite  {
+    height: 82%;
+}
+
+/* SPIELERKARTEN */
+.spieler {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    max-height: 30%;
+    padding-bottom: 1rem;
+    background-color: #52cc70;
+    border-top: 3px solid #2a2a2a;
+}
+
+.spieler .name {
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.spieler .karten,
+.spieler .karten-deaktiviert {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.spieler .karten .kartenvorderseite.ungueltig {
+    box-shadow: 0 0 0.25rem 0.25rem #6a2222;
+}
+
+.spieler .karten .kartenvorderseite.ungueltig:hover {
+    box-shadow: 0 0 0.25rem 0.25rem #9a2222;
+}
+
+.spieler .karten .kartenvorderseite,
+.spieler .karten-deaktiviert .kartenvorderseite {
+    width: 100px;
+    height: 143px;
+    margin: 0.35rem;
+}
+
+.spieler .karten-deaktiviert .kartenvorderseite {
+    opacity: 0.7;
+}
+
+.spieler .karten .kartenvorderseite:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0.25rem 0.25rem #2a2a2a;
+}

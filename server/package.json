@@ -1,0 +1,33 @@
+{
+  "name": "maumauserver",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A server to manage mau-mau games",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whitelake-city/maumau.git"
+  },
+  "keywords": [
+    "mau-mau",
+    "server",
+    "game"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/whitelake-city/maumau/issues"
+  },
+  "homepage": "https://github.com/whitelake-city/maumau#readme",
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "nodemon": "^1.11.0",
+    "rethinkdb": "^2.3.3",
+    "socket.io": "^2.0.3"
+  }
+}
