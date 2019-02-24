@@ -1,6 +1,6 @@
 # MauMau
 
-Please note that this is teaching project and not supposed to be put into any prodcution like environment.
+Please note that this is a teaching project and not supposed to be put into any prodcution like environment.
 Be also aware of the fact that large parts of the frontend are written in German, as the lessons were given in German.
 
 
