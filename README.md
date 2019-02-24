@@ -2,7 +2,7 @@
 
 Please note that this is a teaching project and not supposed to be put into any prodcution like environment.
 Be also aware of the fact that large parts of the frontend are written in German, as the lessons were given in German.
-
+The directory `browser` already includes the complete finished game. If you are looking for the lessons go to the lessons project https://github.com/whitelake-city/maumaulessons. 
 
 ## Server
 
@@ -33,3 +33,7 @@ To start the server run from inside the `server` directory:
 ``
 npm start
 ``
+
+## Client
+
+To start the client got to the folder `browser` and run `npm install` followed by `npm start`. consecutive starts don't require to run install again. 
