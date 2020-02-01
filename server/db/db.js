@@ -42,7 +42,7 @@ class Db {
                 .run(connection);
             callback(connection)
         }, (err) => {
-            err.log('Unable to establish a connection to db', err)
+            // err.log('Unable to establish a connection to db', err)
         })
     }
 
